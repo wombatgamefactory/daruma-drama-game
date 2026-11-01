@@ -28,9 +28,9 @@ function randomGame(players, rules = {}, seed = 'g', firstDealer = null) {
 }
 
 // ---------- defaults are the standard rules ----------
-check('defaults are the standard rules (line 3, chosen fall, pad, standard hands, full deck, lost, colours, first)', same(
-  VARIANTS.map((v) => DEFAULT_RULES[v.name]), ['3', 'chosen', 'pad', 'standard', 'full', 'lost', 'colours', 'first']));
-check('V1..V8 are all present in order', same(VARIANTS.map((v) => v.id), ['V1', 'V2', 'V3', 'V4', 'V5', 'V6', 'V7', 'V8']));
+check('defaults are the standard rules (line 3, chosen fall, pad, standard hands, full deck, lost, fewest left, first, bonus 2)', same(
+  VARIANTS.map((v) => DEFAULT_RULES[v.name]), ['3', 'chosen', 'pad', 'standard', 'full', 'lost', 'leftover', 'first', '2']));
+check('V1..V9 are all present in order', same(VARIANTS.map((v) => v.id), ['V1', 'V2', 'V3', 'V4', 'V5', 'V6', 'V7', 'V8', 'V9']));
 
 // ---------- R1 components ----------
 {
@@ -177,7 +177,7 @@ check('R2.2 the shrinking deck is a variant, not the default', DEFAULT_RULES.FOR
   check('R6.2 trick 3: a void seat\'s trump colour beats the led colour (Red 3 over Purple)', t3.winner === 2 && t3.byTrump && same(t3.bank, ['red-1', 'red-10', 'blue-4']));
   check('R8.3 / R6.2 trick 4: the new leftmost card (Purple 1) makes Purple 4 a trump', t4.winner === 0 && t4.byTrump && same(t4.bank, ['purple-1']));
   check('R9.2 line cards at hand end are lost (recorded, not scored)', same(h.lost, [[], ['green-1', 'purple-2', 'blue-11'], ['gold-11'], ['gold-5', 'purple-3', 'blue-10']]));
-  check('R9.3 hand score = cards banked this hand', same(h.scores, [2, 1, 3, 0]) && same(g.totals, [2, 1, 3, 0]));
+  check('R9.3 hand score = cards banked this hand + full-line bonuses (seat 2 rose from a full line: 3 + 2)', same(h.scores, [2, 1, 5, 0]) && same(g.totals, [2, 1, 5, 0]) && same(h.bonuses, [0, 0, 2, 0]));
   check('R9.4 the hand record keeps scores, banked cards, lost cards, knock-offs and trick winners',
     same(h.banked, [['red-5', 'purple-1'], ['gold-2'], ['red-1', 'red-10', 'blue-4'], []]) && same(h.knockOffs, [0, 0, 1, 2]) && same(h.tricks.map((t) => t.winner), [1, 0, 2, 0]));
   check('R9.5 all cards come back for the next hand (fresh deal, piles cleared)', g.phase === 'fall' && g.piles.every((p) => p.length === 0) && conservation(g).ok && g.hands.every((x) => x.length === 11));
@@ -238,35 +238,79 @@ for (const [rule, winner] of [['first', 1], ['last', 2]]) {
   check('R10.2 totals are never negative under the default rules', negative === 0);
 }
 
-// R10 / R11 scoring, on crafted end states.
-function ended(n, totals, banked, rules = {}) {
+// R10 / R11 scoring, on crafted end states. `lost` = line cards left at the hand end, per seat.
+function ended(n, totals, banked, rules = {}, lost = null) {
   const g = createGame({ seed: 1, players: n, rules });
   g.totals = [...totals];
-  g.handLog = [{ handNo: 0, scores: [...totals], banked: banked.map((b) => [...b]), lost: banked.map(() => ['purple-11']), tricks: [] }];
+  g.handLog = [{ handNo: 0, scores: [...totals], banked: banked.map((b) => [...b]), lost: lost ? lost.map((l) => [...l]) : banked.map(() => ['purple-11']), tricks: [] }];
   return gameResult(g);
 }
 {
+  const COL = { TIEBREAK: 'colours' };
   const r1 = ended(4, [10, 9, 8, 7], [['red-1'], [], [], []]);
   check('R10.1 the highest total wins', same(r1.winners, [0]) && !r1.shared && !r1.tiebreakUsed && r1.margin === 1 && r1.winningScore === 10);
-  const r2 = ended(4, [10, 10, 8, 7], [['red-1', 'gold-1', 'green-1'], ['red-2', 'red-3', 'gold-2'], [], []]);
-  check('R11.1 tied on total: most different colours across the piles wins (3 against 2)', same(r2.winners, [0]) && r2.tiebreakUsed && !r2.shared && same(r2.colourCounts.slice(0, 2), [3, 2]));
-  const r3 = ended(4, [10, 10, 10, 7], [['red-1', 'gold-1'], ['red-2', 'gold-2', 'green-2'], ['red-3', 'gold-3', 'blue-3'], []]);
-  check('R11.2 still tied on colours: the win is shared', same(r3.winners, [1, 2]) && r3.shared && r3.tiebreakUsed);
-  const r4 = ended(4, [10, 10, 9, 7], [['red-1'], ['gold-2'], ['red-3', 'gold-3', 'blue-3', 'green-3', 'purple-3'], []]);
-  check('R11.3 the tiebreak only looks at players tied for most', same(r4.winners, [0, 1]) && r4.shared && !r4.tiebreakUsed);
-  check('R11.4 only banked cards count (lost Purple 11 does not add a colour)', r4.colourCounts[0] === 1);
-  const g = createGame({ seed: 1, players: 3 });
+  // Standard tiebreak (since 01/11/2026): fewest line cards left at hand ends.
+  const L1 = ended(4, [10, 10, 8, 7], [[], [], [], []], {}, [['red-1', 'red-2'], ['gold-1'], [], []]);
+  check('R11.1 tied on total: fewest cards left on the line wins (1 against 2), the standard tiebreak', same(L1.winners, [1]) && L1.tiebreakUsed && !L1.shared && same(L1.leftCounts.slice(0, 2), [2, 1]) && L1.tiebreak === 'leftover');
+  const L2 = ended(4, [10, 10, 10, 7], [[], [], [], []], {}, [['red-1', 'red-2'], ['gold-1'], ['blue-1'], []]);
+  check('R11.2 still tied on cards left: the win is shared', same(L2.winners, [1, 2]) && L2.shared && L2.tiebreakUsed);
+  const L3 = ended(4, [10, 10, 9, 7], [[], [], [], []], {}, [['red-1'], ['gold-1'], [], []]);
+  check('R11.3 the tiebreak only looks at players tied for most (seat 2 left none but is not tied)', same(L3.winners, [0, 1]) && L3.shared && !L3.tiebreakUsed);
+  {
+    const g = createGame({ seed: 1, players: 3 });
+    g.totals = [5, 5, 1];
+    g.handLog = [{ banked: [[], [], []], lost: [['red-1'], [], []], scores: [3, 1, 1], tricks: [] }, { banked: [[], [], []], lost: [[], ['gold-2', 'gold-3'], []], scores: [2, 4, 0], tricks: [] }];
+    const r = gameResult(g);
+    check('R11.1 cards left are added over ALL hands (1 against 2)', same(r.winners, [0]) && same(r.leftCounts, [1, 2, 0]));
+  }
+  const L4 = ended(4, [10, 10, 8, 8], [[], [], [], []], {}, [[], ['red-1'], ['red-2'], ['red-3']]);
+  check('R10.3 ranking by total, then fewest left; equal on both share a rank', same(L4.ranking.map((x) => [x.seat, x.rank]), [[0, 1], [1, 2], [2, 3], [3, 3]]));
+  const tl = describeEvent({ type: 'game-over', ...L1 }, ['Ann', 'Bo', 'Cy', 'Di']);
+  check('R11.5 the result explains the tiebreak ("fewest cards left on the line (1 against 2)")', /fewest cards left on the line \(1 against 2\)/.test(tl), tl);
+  // Colours tiebreak (the standard before 01/11/2026), now a playtest switch.
+  const r2 = ended(4, [10, 10, 8, 7], [['red-1', 'gold-1', 'green-1'], ['red-2', 'red-3', 'gold-2'], [], []], COL);
+  check('RV7 colours: tied on total, most different colours across the piles wins (3 against 2)', same(r2.winners, [0]) && r2.tiebreakUsed && !r2.shared && same(r2.colourCounts.slice(0, 2), [3, 2]));
+  const r3 = ended(4, [10, 10, 10, 7], [['red-1', 'gold-1'], ['red-2', 'gold-2', 'green-2'], ['red-3', 'gold-3', 'blue-3'], []], COL);
+  check('RV7 colours: still tied on colours, the win is shared', same(r3.winners, [1, 2]) && r3.shared && r3.tiebreakUsed);
+  const r4 = ended(4, [10, 10, 9, 7], [['red-1'], ['gold-2'], ['red-3', 'gold-3', 'blue-3', 'green-3', 'purple-3'], []], COL);
+  check('RV7 colours: only players tied for most count', same(r4.winners, [0, 1]) && r4.shared && !r4.tiebreakUsed);
+  check('RV7 colours: only banked cards count (lost Purple 11 does not add a colour)', r4.colourCounts[0] === 1);
+  const g = createGame({ seed: 1, players: 3, rules: COL });
   g.totals = [5, 5, 1];
-  g.handLog = [{ banked: [['red-1'], ['gold-1'], []], scores: [3, 1, 1], tricks: [] }, { banked: [['gold-4'], ['gold-5'], []], scores: [2, 4, 0], tricks: [] }];
+  g.handLog = [{ banked: [['red-1'], ['gold-1'], []], lost: [[], [], []], scores: [3, 1, 1], tricks: [] }, { banked: [['gold-4'], ['gold-5'], []], lost: [[], [], []], scores: [2, 4, 0], tricks: [] }];
   const r5 = gameResult(g);
-  check('R11.1 colours count over ALL hands\' piles (red + gold vs gold only)', same(r5.winners, [0]) && r5.colourCounts[0] === 2 && r5.colourCounts[1] === 1);
-  const r6 = ended(4, [10, 10, 8, 8], [['red-1', 'gold-1', 'green-1'], ['red-2', 'gold-2'], ['red-3', 'gold-3', 'blue-3', 'green-3'], ['red-4', 'gold-4', 'blue-4', 'green-4']]);
-  check('R10.3 ranking by total, then colour count; equal on both share a rank', same(r6.ranking.map((x) => [x.seat, x.rank]), [[0, 1], [1, 2], [2, 3], [3, 3]]));
-  const r7 = ended(4, [10, 10, 8, 8], [['red-1', 'gold-1', 'green-1'], ['red-2', 'gold-2'], [], []], { TIEBREAK: 'shared' });
-  check('R11.6 / RV7.2 TIEBREAK shared: tied players share the win, no colour count', same(r7.winners, [0, 1]) && r7.shared && !r7.tiebreakUsed && same(r7.ranking.map((x) => x.rank), [1, 1, 3, 3]));
+  check('RV7 colours count over ALL hands\' piles (red + gold vs gold only)', same(r5.winners, [0]) && r5.colourCounts[0] === 2 && r5.colourCounts[1] === 1);
+  const r6 = ended(4, [10, 10, 8, 8], [['red-1', 'gold-1', 'green-1'], ['red-2', 'gold-2'], ['red-3', 'gold-3', 'blue-3', 'green-3'], ['red-4', 'gold-4', 'blue-4', 'green-4']], COL);
+  check('RV7 colours: ranking by total, then colour count; equal on both share a rank', same(r6.ranking.map((x) => [x.seat, x.rank]), [[0, 1], [1, 2], [2, 3], [3, 3]]));
+  const r7 = ended(4, [10, 10, 8, 8], [['red-1', 'gold-1', 'green-1'], ['red-2', 'gold-2'], [], []], { TIEBREAK: 'shared' }, [['red-5'], [], [], []]);
+  check('R11.6 / RV7.2 TIEBREAK shared: tied players share the win, no tiebreak', same(r7.winners, [0, 1]) && r7.shared && !r7.tiebreakUsed && same(r7.ranking.map((x) => x.rank), [1, 1, 3, 3]));
   const text = describeEvent({ type: 'game-over', ...r2 }, ['Ann', 'Bo', 'Cy', 'Di']);
-  check('R11.5 the result explains the tiebreak ("most different colours (3 against 2)")', /most different colours \(3 against 2\)/.test(text), text);
+  check('RV7 colours: the result explains the tiebreak ("most different colours (3 against 2)")', /most different colours \(3 against 2\)/.test(text), text);
   check('R11.5 the result explains a shared win', /^Shared win: Bo and Cy/.test(describeEvent({ type: 'game-over', ...r3 }, ['Ann', 'Bo', 'Cy', 'Di'])));
+}
+
+// ---------- R7.3a full-line bonus ----------
+{
+  const HANDS = () => [['red-11', 'gold-1'], ['red-2', 'gold-2'], ['red-3', 'gold-3'], ['red-4', 'gold-4']];
+  const first = (g) => g.handLog[0].tricks[0];
+  const g = position({ hands: HANDS(), lines: [['green-1', 'green-2', 'green-3'], [], [], []] });
+  const ev = play(g, 'red-11');
+  check('R7.3a rising from a full line of 3 records a bonus of 2 (standard)', first(g).bank.length === 3 && first(g).bonus === 2);
+  check('R7.3a the trick-won event carries the bonus', ev.some((e) => e.type === 'trick-won' && e.trickNo === 1 && e.bonus === 2));
+  check('R7.3a / R9.3 the hand score is cards banked + bonus (3 + 2 = 5)', g.handLog[0].scores[0] === 5 && g.handLog[0].bonuses[0] === 2, `${g.handLog[0].scores}`);
+  check('R7.3a the hand-ended event lists the bonuses', ev.some((e) => e.type === 'hand-ended' && e.bonuses[0] === 2));
+  const g1 = position({ hands: HANDS(), lines: [['green-1', 'green-2', 'green-3'], [], [], []], rules: { FULL_LINE_BONUS: '1' } });
+  play(g1, 'red-11');
+  const g0 = position({ hands: HANDS(), lines: [['green-1', 'green-2', 'green-3'], [], [], []], rules: { FULL_LINE_BONUS: 0 } });
+  play(g0, 'red-11');
+  check('RV9 FULL_LINE_BONUS 1 and 0 (numbers accepted)', first(g1).bonus === 1 && g1.handLog[0].scores[0] === 4 && first(g0).bonus === 0 && g0.handLog[0].scores[0] === 3);
+  const p2 = position({ hands: HANDS(), lines: [['green-1', 'green-2'], [], [], []] });
+  play(p2, 'red-11');
+  check('R7.3a a rise of 2 under a limit of 3 earns no bonus', first(p2).bank.length === 2 && first(p2).bonus === 0);
+  const p3 = position({ hands: HANDS(), lines: [['green-1', 'green-2'], [], [], []], rules: { LINE_LIMIT: '2' } });
+  play(p3, 'red-11');
+  check('R7.3a under LINE_LIMIT 2 a rise of 2 is a full line and earns the bonus', first(p3).bank.length === 2 && first(p3).bonus === 2);
+  check('RV9 rules code: standard is std; the old standard is tie-colours+bonus-0', rulesCode(resolveVariants({}), 4) === 'std' && rulesCode(resolveVariants({ FULL_LINE_BONUS: '0', TIEBREAK: 'colours' }), 4) === 'tie-colours+bonus-0');
 }
 
 // ---------- R12 trick summary ----------
@@ -327,19 +371,19 @@ for (const n of [3, 4, 5]) {
       inPiles += h.banked.reduce((a, b) => a + b.length, 0);
     });
     if (Math.floor((55 - inPiles) / n) >= 4) ends = false;
-    if (!same(g.totals, g.piles.map((p) => p.length))) totalsOk = false;
+    if (!same(g.totals, g.piles.map((p, s) => p.length + g.measures.bonusPoints[s]))) totalsOk = false;
     if (g.handLog[0].handSize !== 11) ok = false;
   }
   check(`RV3.3 shrinking at ${n}p: hand size = min(11, floor(cards left / n)), 11 in the first hand`, ok, detail.slice(0, 2).join('; '));
   check(`RV3.2 shrinking at ${n}p: the game ends when the cards cannot give everyone 4`, ends);
   check(`RV3.3 shrinking at ${n}p: the deal still passes left and the left of the dealer leads`, rot);
-  check(`RV3.2 shrinking at ${n}p: score = score pile size (piles stay out all game)`, totalsOk);
+  check(`RV3.2 shrinking at ${n}p: score = score pile size + bonuses (piles stay out all game)`, totalsOk);
 }
 {
   let ok = true;
   for (let i = 0; i < 10; i++) {
     const { state: g } = randomGame(4, { FORMAT: 'shrinking', LEFTOVER: 'minus1' }, `shm${i}`);
-    if (!same(g.totals, g.piles.map((p, s) => p.length - g.penalties[s])) || !same(g.penalties, g.measures.leftover)) ok = false;
+    if (!same(g.totals, g.piles.map((p, s) => p.length + g.measures.bonusPoints[s] - g.penalties[s])) || !same(g.penalties, g.measures.leftover)) ok = false;
   }
   check('RV3.3 shrinking + minus1: penalties come off the running total, piles keep their cards', ok);
 }
@@ -364,9 +408,9 @@ for (const n of [3, 4, 5]) {
   let ok = true; let negativeSeen = false;
   for (let i = 0; i < 40; i++) {
     const { state: g } = randomGame(3 + (i % 3), { LEFTOVER: 'minus1' }, `m1-${i}`);
-    for (const h of g.handLog) h.scores.forEach((x, s) => { if (x !== h.banked[s].length - h.lost[s].length) ok = false; if (x < 0) negativeSeen = true; });
+    for (const h of g.handLog) h.scores.forEach((x, s) => { if (x !== h.banked[s].length + h.bonuses[s] - h.lost[s].length) ok = false; if (x < 0) negativeSeen = true; });
   }
-  check('RV6.2 minus1: hand score = cards banked - cards left on the line', ok);
+  check('RV6.2 minus1: hand score = cards banked + bonuses - cards left on the line', ok);
   check('RV6.2 minus1: hand scores can be negative', negativeSeen);
 }
 

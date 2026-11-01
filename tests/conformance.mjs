@@ -32,7 +32,7 @@ for (const set of data.sets) {
     const say = (p) => { if (problems.length < 4) problems.push(p); };
     try {
       const n = fx.n;
-      const g = createGame({ seed: 0, players: n, rules: set.rules, firstDealer: n - 1, deals: fx.hands.map((h) => ({ hands: h.deal.map(cards) })) });
+      const g = createGame({ seed: 0, players: n, rules: { FULL_LINE_BONUS: '0', TIEBREAK: 'colours', ...set.rules }, firstDealer: n - 1, deals: fx.hands.map((h) => ({ hands: h.deal.map(cards) })) });
       fx.hands.forEach((h, hi) => {
         if (g.handNo !== hi || g.phase !== 'fall') { say(`hand ${hi}: not at its first fall (hand ${g.handNo}, ${g.phase})`); return; }
         const falls = cards(h.falls);

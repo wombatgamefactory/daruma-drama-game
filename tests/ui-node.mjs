@@ -45,7 +45,7 @@ const clone = (x) => JSON.parse(JSON.stringify(x));
   const ev = play(g, 'blue-7', 'gold-4', 'blue-2', 'blue-9');
   const won = ev.find((e) => e.type === 'trick-won');
   const s = trickSentence(g.tricks[0], won, names);
-  check('sentence: trump win names the trump, the winner and the bank', /^Mia led Blue 7; Sam trumped with Gold 4 \(Gold is Sam's trump\) and wins, banking 3; Ann followed with Blue 2; Bo followed with Blue 9\.$/.test(s), s);
+  check('sentence: trump win names the trump, the winner, the bank and the full-line bonus', /^Mia led Blue 7; Sam trumped with Gold 4 \(Gold is Sam's trump\) and wins, banking 3 \+2 bonus; Ann followed with Blue 2; Bo followed with Blue 9\.$/.test(s), s);
   check('banner: says who won with what and what was banked', winnerBanner({ winner: 1, card: 'gold-4', bankSize: 3, byTrump: true, trumpColour: 'gold' }, names) === 'Sam wins with Gold 4 (Gold trump) and banks 3');
 }
 {
@@ -65,9 +65,11 @@ const clone = (x) => JSON.parse(JSON.stringify(x));
 }
 {
   const names = ['Ann', 'Bo', 'Cy'];
-  const mk = (tied, winners, shared, used, counts) => ({ tiedOnTotal: tied, winners, shared, tiebreakUsed: used, winningScore: 14, colourCounts: counts, ranking: [] });
-  check('tiebreak text: colours decide, tied players only', /^Ann and Bo tied on 14\. Tiebreak: most different colours in their score piles\. Ann: 5, Bo: 4\. Ann wins\.$/.test(tiebreakText(mk([0, 1], [0], false, true, [5, 4, 2]), names)), tiebreakText(mk([0, 1], [0], false, true, [5, 4, 2]), names));
-  check('tiebreak text: a shared win says shared', /The win is shared\.$/.test(tiebreakText(mk([0, 1], [0, 1], true, false, [4, 4, 1]), names)));
+  const mk = (tied, winners, shared, used, counts, tiebreak = 'colours') => ({ tiedOnTotal: tied, winners, shared, tiebreakUsed: used, winningScore: 14, colourCounts: counts, leftCounts: counts, tiebreak, ranking: [] });
+  check('tiebreak text: colours decide, tied players only', /^Ann and Bo tied on 14\. Tiebreak: most different colours in their score piles\. Colours banked over the game: Ann 5, Bo 4\. Ann wins\.$/.test(tiebreakText(mk([0, 1], [0], false, true, [5, 4, 2]), names)), tiebreakText(mk([0, 1], [0], false, true, [5, 4, 2]), names));
+  const lt = tiebreakText(mk([0, 1], [1], false, true, [3, 1, 0], 'leftover'), names);
+  check('tiebreak text: fewest left decides (the standard rule), tied players only', /^Ann and Bo tied on 14\. Tiebreak: fewest cards left on the line\. Cards left on the line at the ends of hands: Ann 3, Bo 1\. Bo wins\.$/.test(lt), lt);
+  check('tiebreak text: a shared win says shared', /the win is shared\.$/i.test(tiebreakText(mk([0, 1], [0, 1], true, false, [4, 4, 1], 'leftover'), names)) && /The win is shared\.$/.test(tiebreakText(mk([0, 1], [0, 1], true, false, [4, 4, 1], 'shared'), names)));
   check('tiebreak text: no tie at the top says nothing', tiebreakText(mk([0], [0], false, false, [3, 2, 1]), names) === '');
   check('tied groups: only groups of two or more', JSON.stringify(tiedGroups({ ranking: [{ seat: 0, total: 9 }, { seat: 1, total: 9 }, { seat: 2, total: 4 }] })) === '[[0,1]]');
 }
@@ -192,7 +194,7 @@ function diffKeys(a, b) {
   const levels = botLevels();
   const html = landingHtml(levels, DEFAULT_SETUP, '');
   check('landing: the hook, the strapline and the stat strip', html.includes('Every card you lose with stays in front of you, knocked over. Your oldest fallen card is your own personal trump.') && html.includes('Fall seven times, stand up eight.') && /3-5<\/b><span>Players[\s\S]*30-40<\/b><span>Minutes[\s\S]*10\+<\/b><span>Ages/.test(html));
-  check('landing: the rule book link points at the v4 PDF', RULEBOOK_URL === 'rules/daruma-drama-rule-book-v4.pdf' && html.includes(`href="${RULEBOOK_URL}"`));
+  check('landing: the rule book link points at the v5 PDF', RULEBOOK_URL === 'rules/daruma-drama-rule-book-v5.pdf' && html.includes(`href="${RULEBOOK_URL}"`));
   check('landing: the watch-the-bots hint', /Set every seat to a bot to watch a game/.test(html));
   check('landing: seats for 3, 4 and 5 players, names editable', [0, 1, 2, 3, 4].every((i) => html.includes(`name="type${i}"`) && html.includes(`name="name${i}"`)) && ['3', '4', '5'].every((n) => html.includes(`name="players" value="${n}"`)));
   const rules = rulesPanelHtml(DEFAULT_SETUP);

@@ -31,7 +31,7 @@ export const HARD_TIMED_PRIOR = 0.15;
 /** Margin points for winning the whole game outright (half if shared, negative if lost); last hand only. */
 export const HARD_WIN_BONUS = 0.25;
 
-const cloneMeasures = (m) => ({ ...m, riseSizes: [...m.riseSizes], tricksWon: [...m.tricksWon], trumpTricksWon: [...m.trumpTricksWon], banked: [...m.banked], knockOffs: [...m.knockOffs], leftover: [...m.leftover] });
+const cloneMeasures = (m) => ({ ...m, riseSizes: [...m.riseSizes], tricksWon: [...m.tricksWon], trumpTricksWon: [...m.trumpTricksWon], banked: [...m.banked], knockOffs: [...m.knockOffs], leftover: [...m.leftover], bonusPoints: [...m.bonusPoints] });
 
 /** A copy of a determinised state that applyAction can mutate without touching the original (history shared). */
 function cloneWorld(s) {

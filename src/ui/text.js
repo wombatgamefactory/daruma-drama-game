@@ -36,7 +36,7 @@ export function trickSentence(trick, ev, names) {
     else if (p.trump) clause = `${who} ${v(who, 'trumped')} with ${cardName(p.card)} (${colourName(cardColour(p.card))} is ${poss(who)} trump)`;
     else if (cardColour(p.card) === led) clause = `${who} ${v(who, 'followed')} with ${cardName(p.card)}`;
     else clause = `${who} had no ${colourName(led)} and ${v(who, 'threw')} ${cardName(p.card)}`;
-    if (win) clause += ` and ${v(who, 'wins')}, ${ev.bankSize ? `banking ${ev.bankSize}` : 'banking nothing'}`;
+    if (win) clause += ` and ${v(who, 'wins')}, ${ev.bankSize ? `banking ${ev.bankSize}${ev.bonus ? ` +${ev.bonus} bonus` : ''}` : 'banking nothing'}`;
     return clause;
   });
   let s = `${parts.join('; ')}.`;
@@ -48,7 +48,7 @@ export function trickSentence(trick, ev, names) {
 /** The short banner under the trick: "Sam wins with Gold 4 and banks 3". */
 export function winnerBanner(banner, names) {
   const who = names[banner.winner];
-  const bank = banner.bankSize ? `banks ${banner.bankSize}` : 'banks nothing';
+  const bank = banner.bankSize ? `banks ${banner.bankSize}${banner.bonus ? ` +${banner.bonus} bonus` : ''}` : 'banks nothing';
   const how = banner.byTrump ? ` (${colourName(banner.trumpColour)} trump)` : '';
   return `${who} ${v(who, 'wins')} with ${cardName(banner.card)}${how} and ${v(who, 'banks')}${bank.slice(bank.indexOf(' '))}`;
 }
@@ -89,7 +89,7 @@ export function previewText(pv, names, lineNote) {
   if (pv.kind === 'lead') return `${name}: you would lead ${colourName(cardColour(pv.card))}. Everyone else must follow it if they can.`;
   const trumpNote = pv.trump ? ` ${name} is your trump, so it counts above the led colour.` : '';
   if (pv.wins) {
-    const bank = pv.bankSize ? `bank ${pv.bankSize} card${pv.bankSize === 1 ? '' : 's'}` : 'bank nothing (your line is empty)';
+    const bank = pv.bankSize ? `bank ${pv.bankSize} card${pv.bankSize === 1 ? '' : 's'}${pv.bonus ? ` and a full-line bonus of ${pv.bonus}` : ''}` : 'bank nothing (your line is empty)';
     if (pv.final) return `${name} wins the trick, and you ${bank}.${trumpNote}`;
     return `${name} would win the trick as it stands; ${pv.remaining} still to play. If it holds you ${bank}.${trumpNote}`;
   }
@@ -132,15 +132,19 @@ export function tiebreakText(result, names) {
   if (tied.length < 2) return '';
   const label = (s) => names[s];
   const join = (seats) => (seats.length === 1 ? label(seats[0]) : seats.length === 2 ? `${label(seats[0])} and ${label(seats[1])}` : `${seats.slice(0, -1).map(label).join(', ')} and ${label(seats[seats.length - 1])}`);
-  const counts = tied.map((s) => `${label(s)}: ${result.colourCounts[s]}`).join(', ');
   const head = `${join(tied)} tied on ${result.winningScore}.`;
+  const colours = result.tiebreak === 'colours';
+  const counts = colours
+    ? `Colours banked over the game: ${tied.map((s) => `${label(s)} ${result.colourCounts[s]}`).join(', ')}.`
+    : `Cards left on the line at the ends of hands: ${tied.map((s) => `${label(s)} ${result.leftCounts[s]}`).join(', ')}.`;
   if (result.shared && !result.tiebreakUsed) {
-    // Either the shared-win rule, or a colour tie that could not be split.
-    return `${head} Colours banked over the game: ${counts}. The win is shared.`;
+    // The shared-win rule, or a tiebreak that could not split anyone.
+    return result.tiebreak === 'shared' ? `${head} The win is shared.` : `${head} ${counts} Still level, so the win is shared.`;
   }
   if (result.tiebreakUsed) {
     const w = result.winners;
-    return `${head} Tiebreak: most different colours in their score piles. ${counts}. ${join(w)} ${w.length > 1 ? 'share the win' : (isYou(label(w[0])) ? 'win' : 'wins')}.`;
+    const rule = colours ? 'most different colours in their score piles' : 'fewest cards left on the line';
+    return `${head} Tiebreak: ${rule}. ${counts} ${join(w)} ${w.length > 1 ? 'share the win' : (isYou(label(w[0])) ? 'win' : 'wins')}.`;
   }
   return head;
 }

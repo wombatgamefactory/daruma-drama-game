@@ -13,7 +13,7 @@ import { applyAction, getActionBlockReason, trickWinner, isTrumpPlay } from '../
  * @returns {null | { kind: 'fall'|'lead'|'follow', seat, card, trump, wins, final, remaining, winnerSeat, winnerCard, bankSize }}
  *   null if the card may not be played now.
  *   follow: wins = this card would win the trick (final: the trick is decided; otherwise it
- *   leads for now and `remaining` plays are still to come), bankSize = cards the seat would bank.
+ *   leads for now and `remaining` plays are still to come), bankSize = cards the seat would bank, bonus = full-line bonus points it would add.
  */
 export function previewCard(state, card) {
   const seat = state.toAct;
@@ -22,7 +22,8 @@ export function previewCard(state, card) {
   if (getActionBlockReason(state, action) !== null) return null;
   if (state.phase === 'fall') return { kind: 'fall', seat, card, trump: false, wins: false, final: false, remaining: 0, winnerSeat: null, winnerCard: null, bankSize: 0 };
   const bankSize = state.lines[seat].length;
-  if (!state.trick) return { kind: 'lead', seat, card, trump: false, wins: false, final: false, remaining: state.n - 1, winnerSeat: seat, winnerCard: card, bankSize };
+  const bonus = bankSize === state.params.lineLimit ? state.params.fullLineBonus : 0; // R7.3a
+  if (!state.trick) return { kind: 'lead', seat, card, trump: false, wins: false, final: false, remaining: state.n - 1, winnerSeat: seat, winnerCard: card, bankSize, bonus };
 
   const trickN = state.trick.n;
   const trump = isTrumpPlay(card, state.trick.ledColour, state.trick.trumps[seat]);
@@ -30,8 +31,8 @@ export function previewCard(state, card) {
   const events = applyAction(sim, action);
   const won = events.find((e) => e.type === 'trick-won' && e.handNo === state.handNo && e.trickNo === trickN);
   if (won) {
-    return { kind: 'follow', seat, card, trump, wins: won.winner === seat, final: true, remaining: 0, winnerSeat: won.winner, winnerCard: won.card, bankSize };
+    return { kind: 'follow', seat, card, trump, wins: won.winner === seat, final: true, remaining: 0, winnerSeat: won.winner, winnerCard: won.card, bankSize, bonus };
   }
   const win = trickWinner(sim.trick.plays, sim.trick.trumps, sim.rules.TRUMP_TIES);
-  return { kind: 'follow', seat, card, trump, wins: win.seat === seat, final: false, remaining: state.n - sim.trick.plays.length, winnerSeat: win.seat, winnerCard: win.card, bankSize };
+  return { kind: 'follow', seat, card, trump, wins: win.seat === seat, final: false, remaining: state.n - sim.trick.plays.length, winnerSeat: win.seat, winnerCard: win.card, bankSize, bonus };
 }

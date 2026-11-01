@@ -159,6 +159,8 @@ legend { font-weight: 700; padding: 0; margin-bottom: 4px; }
 .stat__label { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-soft); font-weight: 700; white-space: nowrap; }
 .stat__value { font-weight: 800; display: flex; flex-wrap: wrap; align-items: center; gap: 0 4px; line-height: 1.2; min-width: 0; }
 .stat__value b { overflow-wrap: anywhere; }
+.stat__value .bonus { font-weight: 800; font-size: 0.72rem; color: var(--ink); background: var(--gold); border-radius: 4px; padding: 0 3px; }
+.pad tr.pad__left th, .pad tr.pad__left td { font-family: inherit; font-size: 0.72rem; font-weight: 600; color: var(--ink-soft); border-top: 0; }
 .stat--trump.trump--red { border-left-color: var(--c-red); }
 .stat--trump.trump--gold { border-left-color: var(--c-gold); }
 .stat--trump.trump--green { border-left-color: var(--c-green); }

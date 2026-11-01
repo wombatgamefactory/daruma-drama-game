@@ -15,7 +15,7 @@
 //   winning_score, margin, hands, tricks, trump_tricks, rise_sizes [0,1,2,3 cards banked],
 //   lost_cards [line cards left at hand ends, by seat], knock_offs [by seat], seconds
 
-import { VARIANTS, DEFAULT_RULES } from '../engine/index.js';
+import { VARIANTS, DEFAULT_RULES, rulesCode } from '../engine/index.js';
 
 export const STORE_KEY = 'daruma-stats-v1';
 export const STORE_VERSION = 1;
@@ -37,7 +37,7 @@ export function createStatsStore(getStorage = defaultStorage) {
       if (!raw) return empty();
       const data = JSON.parse(raw);
       if (!data || data.v !== STORE_VERSION) return empty();
-      return { v: STORE_VERSION, games: Array.isArray(data.games) ? data.games.filter(isRecord) : [] };
+      return { v: STORE_VERSION, games: Array.isArray(data.games) ? data.games.filter(isRecord).map(migrate) : [] };
     } catch { return empty(); }
   }
 
@@ -65,6 +65,18 @@ export function createStatsStore(getStorage = defaultStorage) {
       try { const s = getStorage(); if (s) s.removeItem(STORE_KEY); return true; } catch { return false; }
     },
   };
+}
+
+/**
+ * Records saved before the standard rules changed (01/11/2026: full-line bonus 2, fewest-left
+ * tiebreak) have no FULL_LINE_BONUS in their rules. Those games were played with no bonus and the
+ * colours tiebreak (unless TIEBREAK said otherwise), so their rules_code is recomputed to say so
+ * ('std' becomes 'tie-colours+bonus-0') and they are not mixed with today's 'std' games.
+ */
+export function migrate(g) {
+  if (!g.rules || typeof g.rules !== 'object' || 'FULL_LINE_BONUS' in g.rules) return g;
+  const rules = { ...g.rules, FULL_LINE_BONUS: '0', TIEBREAK: g.rules.TIEBREAK || 'colours' };
+  try { return { ...g, rules, rules_code: rulesCode(rules, g.players) }; } catch { return g; }
 }
 
 /** A record read back from storage is trusted only as far as the summary needs. */

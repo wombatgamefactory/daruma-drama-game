@@ -80,11 +80,13 @@ export function seatHtml(vm, s, area) {
   if (toAct) tags.push(`<span class="tag tag--turn">${b.phase === 'fall' ? 'Choosing' : (vm.types[s] === 'human' && vm.humanSeats.length === 1 ? 'Your turn' : 'To play')}</span>`);
   const rising = vm.board.fx && vm.board.fx.rose && vm.board.fx.rose.seat === s;
   const bank = line.length;
+  const bonus = bank === vm.state.params.lineLimit ? vm.state.params.fullLineBonus : 0; // R7.3a
   const total = b.totals[s] + b.handBanked[s];
   const trumpBox = t
     ? `<div class="stat stat--trump trump--${t}" title="${esc(`${poss(name)} personal trump is ${COLOUR_NAMES[t]}: the colour of the leftmost card in the line`)}"><span class="stat__label">Trump</span><span class="stat__value">${glyphImg(t, 'glyph--sm')}<b>${esc(COLOUR_NAMES[t])}</b></span></div>`
     : `<div class="stat stat--trump trump--none" title="${esc(b.phase === 'fall' ? 'Trumps are set once the first falls are turned over' : `${name} ${youName(name) ? 'have' : 'has'} no fallen cards, so no trump`)}"><span class="stat__label">Trump</span><span class="stat__value"><b>no trump</b></span></div>`;
-  const bankBox = `<div class="stat stat--bank${bank ? '' : ' is-zero'}" title="${esc(`${name} would bank ${plural(bank, 'card', 'cards')} by winning a trick now: the whole line rises into the score pile`)}"><span class="stat__label">Bank if win</span><span class="stat__value"><b>${bank}</b></span></div>`;
+  const bankTitle = `${name} would bank ${plural(bank, 'card', 'cards')} by winning a trick now: the whole line rises into the score pile${bonus ? `, plus a full-line bonus of ${bonus}` : ''}`;
+  const bankBox = `<div class="stat stat--bank${bank ? '' : ' is-zero'}${bonus ? ' is-full' : ''}" title="${esc(bankTitle)}"><span class="stat__label">Bank if win</span><span class="stat__value"><b>${bank}</b>${bonus ? `<small class="bonus">+${bonus}</small>` : ''}</span></div>`;
   return `<article class="seat area-${area}${toAct ? ' is-turn' : ''}${rising ? ' is-rising' : ''}" data-seat="${s}" aria-label="${esc(name)}">
     <header class="seat__head">
       ${avatar(s)}
@@ -94,8 +96,8 @@ export function seatHtml(vm, s, area) {
     <div class="seat__stats">${trumpBox}${bankBox}</div>
     ${lineHtml(vm, s)}
     <footer class="seat__score">
-      <span class="pile${rising ? ' fx-bump' : ''}" title="${esc(`Score pile: cards banked ${b.pad ? 'this hand' : 'so far'}`)}">${img('score-pile', { cls: 'pile__icon', alt: '', label: '', w: 192, h: 192 })}<b>${b.piles[s]}</b> in pile</span>
-      <span class="total" title="Running total: ${esc(plural(total, 'point', 'points'))}${b.pad ? ', including the cards banked this hand' : ''}">Total <b>${total}</b></span>
+      <span class="pile${rising ? ' fx-bump' : ''}" title="${esc(`Score pile: cards banked ${b.pad ? 'this hand' : 'so far'} (full-line bonuses are in the total)`)}">${img('score-pile', { cls: 'pile__icon', alt: '', label: '', w: 192, h: 192 })}<b>${b.piles[s]}</b> in pile</span>
+      <span class="total" title="Running total: ${esc(plural(total, 'point', 'points'))}${b.pad ? ', including the points scored this hand' : ''}">Total <b>${total}</b></span>
       <span class="held" title="Cards still in hand">${b.handCounts[s]} in hand</span>
     </footer>
   </article>`;
@@ -233,10 +235,12 @@ export function padHtml(vm) {
     }
   }
   const totals = b.totals.map((t, s) => t + b.handBanked[s]);
+  const leftRow = vm.state.rules.TIEBREAK === 'leftover' && log.length
+    ? `<tr class="pad__left"><th scope="row" title="Cards left on the line at the ends of hands: fewest wins a tie">Left on line</th>${names.map((_, s) => `<td>${log.reduce((a, h) => a + h.lost[s].length, 0)}</td>`).join('')}</tr>` : '';
   return `<table class="pad"><caption class="sr-only">Score pad</caption>
     <thead><tr><th scope="col"></th>${names.map((n, s) => `<th scope="col" title="${esc(n)}">${avatar(s, 'pad__avatar')}<span class="pad__name">${esc(n)}</span></th>`).join('')}</tr></thead>
     <tbody>${rows.join('')}</tbody>
-    <tfoot><tr><th scope="row">Total</th>${totals.map((t) => `<td>${t}</td>`).join('')}</tr></tfoot></table>`;
+    <tfoot><tr><th scope="row">Total</th>${totals.map((t) => `<td>${t}</td>`).join('')}</tr>${leftRow}</tfoot></table>`;
 }
 
 export function logHtml(vm) {
@@ -279,14 +283,15 @@ export function handSummaryHtml(vm, modal) {
   const names = vm.names;
   const last = vm.state.phase === 'over' && modal.handNo === vm.state.handLog.length - 1;
   const rows = names.map((n, s) => {
+    const bon = ev.bonuses && ev.bonuses[s] ? ` <small>(incl. +${ev.bonuses[s]} bonus)</small>` : '';
     const pen = ev.penalties[s] ? ` <small>(${ev.penalties[s]} off for the line)</small>` : '';
-    return `<tr><th scope="row">${avatar(s, 'pad__avatar')}${esc(n)}</th><td class="num"><b>${ev.scores[s]}</b>${pen}</td><td>${miniCards(ev.lost[s])}</td><td class="num">${ev.totals[s]}</td></tr>`;
+    return `<tr><th scope="row">${avatar(s, 'pad__avatar')}${esc(n)}</th><td class="num"><b>${ev.scores[s]}</b>${bon}${pen}</td><td>${miniCards(ev.lost[s])}</td><td class="num">${ev.totals[s]}</td></tr>`;
   }).join('');
   const hp = vm.state.params.handsPerGame;
   const title = `Hand ${modal.handNo + 1}${hp ? ` of ${hp}` : ''} is over`;
   return `<div class="overlay" data-overlay="hand"><div class="end end--hand" role="dialog" aria-modal="true" aria-labelledby="hand-title">
     <h2 id="hand-title">${esc(title)}</h2>
-    <p class="end__lead">Each player scores the cards they banked this hand. Cards still lying in a fall line are lost.</p>
+    <p class="end__lead">Each player scores the cards they banked this hand${vm.state.params.fullLineBonus ? `, plus ${vm.state.params.fullLineBonus} for each rise from a full line` : ''}. Cards still lying in a fall line are lost${vm.state.rules.TIEBREAK === 'leftover' ? ' and count against you in a tie' : ''}.</p>
     <div class="table-wrap"><table class="summary"><thead><tr><th scope="col">Player</th><th scope="col">Scored</th><th scope="col">Lost on the line</th><th scope="col">Total</th></tr></thead><tbody>${rows}</tbody></table></div>
     <div class="end__buttons"><button type="button" class="btn btn--primary btn--big" data-action="continue" id="continue">${last ? 'See the final result' : 'Deal the next hand'}</button></div>
   </div></div>`;
@@ -305,7 +310,9 @@ export function gameEndHtml(vm) {
   const rows = result.ranking.map((r) => {
     const win = winners.includes(r.seat);
     const tied = tiedSeats.has(r.seat);
-    const cols = tied ? `<span class="rank__cols" title="Colours banked over the game">${result.coloursBanked[r.seat].map((c) => glyphImg(c, 'glyph--sm')).join('')}<small>${result.colourCounts[r.seat]} colour${result.colourCounts[r.seat] === 1 ? '' : 's'}</small></span>` : '';
+    let cols = '';
+    if (tied && result.tiebreak === 'colours') cols = `<span class="rank__cols" title="Colours banked over the game">${result.coloursBanked[r.seat].map((c) => glyphImg(c, 'glyph--sm')).join('')}<small>${result.colourCounts[r.seat]} colour${result.colourCounts[r.seat] === 1 ? '' : 's'}</small></span>`;
+    else if (tied && result.tiebreak === 'leftover') cols = `<span class="rank__cols" title="Cards left on the line at the ends of hands: fewest wins a tie"><small>${result.leftCounts[r.seat]} left on line</small></span>`;
     const eq = result.ranking.filter((x) => x.rank === r.rank).length > 1 ? '=' : '';
     return `<li class="rank${win ? ' is-winner' : ''}"><span class="rank__pos">${eq}${r.rank}</span>${avatar(r.seat, 'rank__avatar')}<span class="rank__who"><b>${esc(names[r.seat])}</b>${badge(vm, r.seat)}${win ? `<i class="crown">${result.shared ? 'Shared win' : 'Winner'}</i>` : ''}</span>${cols}<span class="rank__total"><b>${r.total}</b> pts</span></li>`;
   }).join('');
@@ -317,7 +324,7 @@ export function gameEndHtml(vm) {
     <h2 id="end-title">${esc(headline)}</h2>
     ${tb ? `<p class="end__tiebreak" id="tiebreak">${esc(tb)}</p>` : ''}
     <ol class="ranking" aria-label="Final ranking">${rows}</ol>
-    <details class="panel"><summary>Score pad</summary><table class="pad pad--end"><thead><tr><th></th>${names.map((n) => `<th>${esc(n)}</th>`).join('')}</tr></thead><tbody>${padRows}</tbody><tfoot><tr><th>Total</th>${result.totals.map((t) => `<td>${t}</td>`).join('')}</tr></tfoot></table></details>
+    <details class="panel"><summary>Score pad</summary><table class="pad pad--end"><thead><tr><th></th>${names.map((n) => `<th>${esc(n)}</th>`).join('')}</tr></thead><tbody>${padRows}</tbody><tfoot><tr><th>Total</th>${result.totals.map((t) => `<td>${t}</td>`).join('')}</tr>${result.tiebreak === 'leftover' ? `<tr class="pad__left"><th>Left on line</th>${result.leftCounts.map((x) => `<td>${x}</td>`).join('')}</tr>` : ''}</tfoot></table></details>
     <p class="end__rules">${code === 'std' ? 'Standard rules.' : `Non-standard rules were on: ${esc(code)}.`}</p>
     <div class="end__buttons">
       <button type="button" class="btn btn--primary btn--big" data-action="again">Play again</button>

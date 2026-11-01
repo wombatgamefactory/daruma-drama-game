@@ -60,7 +60,7 @@ export function statsHtml(data, filter = 'all') {
     <h3>Scores by player count</h3>
     ${table(['Players', 'Games', 'Avg score per hand', 'Avg margin', 'Avg winning score'], playerRows)}
     <h3>Ties and the tiebreak</h3>
-    <p>Level on the top total: <b>${t.tied}</b> of ${t.games} (${pct(t.tied, t.games)}). Colour tiebreak decided it: <b>${t.tiebreak}</b> (${pct(t.tiebreak, t.games)}). Win shared: <b>${t.shared}</b> (${pct(t.shared, t.games)}).${small(t.games)}</p>
+    <p>Level on the top total: <b>${t.tied}</b> of ${t.games} (${pct(t.tied, t.games)}). Tiebreak decided it: <b>${t.tiebreak}</b> (${pct(t.tiebreak, t.games)}). Win shared: <b>${t.shared}</b> (${pct(t.shared, t.games)}).${small(t.games)}</p>
     <h3>By rules</h3>
     <p class="st__muted">Every game, split by the rules it was played under, to compare variants.</p>
     ${table(['Rules', 'Games', 'Avg score per hand', 'Avg margin', 'Level on top', 'Tiebreak decided', 'Shared win'], ruleRows)}

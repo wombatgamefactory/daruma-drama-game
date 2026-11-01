@@ -28,7 +28,7 @@ const rootArg = process.argv.find((a) => a.startsWith('--root='));
 const ROOT = path.resolve(rootArg ? rootArg.slice(7) : path.join(HERE, '..', '..'));
 
 const MAX_BYTES = 500 * 1024;
-const SIZE_ALLOW = new Set(['rules/daruma-drama-rule-book-v4.pdf']); // the printed rule book, allowed on purpose
+const SIZE_ALLOW = new Set(['rules/daruma-drama-rule-book-v5.pdf']); // the printed rule book, allowed on purpose
 const EMAIL_ALLOW = ['info@wombatgamefactory.com']; // the public contact address, exact match only; any other email still fails
 const SLICE = 4000; // longest stretch of one line that a pattern is run over at a time
 const w = (...parts) => parts.join(''); // keeps a pattern from matching its own source line

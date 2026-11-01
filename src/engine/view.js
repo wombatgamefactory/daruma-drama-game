@@ -22,7 +22,7 @@ const clone = (x) => JSON.parse(JSON.stringify(x));
 // whole history there was the simulator's bottleneck).
 const copyPlays = (plays) => plays.map((p) => ({ seat: p.seat, card: p.card, trump: p.trump }));
 const copyTrick = (t) => ({ ...t, trumps: [...t.trumps], plays: copyPlays(t.plays), bank: t.bank ? [...t.bank] : t.bank, knocked: t.knocked ? t.knocked.map((k) => ({ seat: k.seat, card: k.card })) : t.knocked });
-const copyMeasures = (m) => ({ ...m, riseSizes: [...m.riseSizes], tricksWon: [...m.tricksWon], trumpTricksWon: [...m.trumpTricksWon], banked: [...m.banked], knockOffs: [...m.knockOffs], leftover: [...m.leftover] });
+const copyMeasures = (m) => ({ ...m, riseSizes: [...m.riseSizes], tricksWon: [...m.tricksWon], trumpTricksWon: [...m.trumpTricksWon], banked: [...m.banked], knockOffs: [...m.knockOffs], leftover: [...m.leftover], bonusPoints: [...m.bonusPoints] });
 function copyHand(h, seat) {
   return {
     ...h,

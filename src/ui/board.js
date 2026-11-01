@@ -28,7 +28,7 @@ export const TRANSIENT = ['fx', 'last', 'banner'];
  */
 export function boardFromState(state, humanSeats = []) {
   const n = state.n;
-  const handBanked = Array.from({ length: n }, (_, s) => state.tricks.filter((t) => t.winner === s).reduce((a, t) => a + t.bank.length, 0));
+  const handBanked = Array.from({ length: n }, (_, s) => state.tricks.filter((t) => t.winner === s).reduce((a, t) => a + t.bank.length + (t.bonus || 0), 0)); // points this hand
   return {
     n,
     pad: state.rules.FORMAT === 'pad',
@@ -136,7 +136,7 @@ export function reduceBoard(board, ev, ctx = {}) {
       }
       b.lines[ev.winner] = [];
       b.piles[ev.winner] += ev.bankSize;
-      b.handBanked[ev.winner] += ev.bankSize;
+      b.handBanked[ev.winner] += ev.bankSize + (ev.bonus || 0); // points: cards + full-line bonus
       b.discard.push(...ev.knocked.map((k) => k.card), ev.card);
       b.trickNo = ev.trickNo;
       b.leader = ev.winner;
@@ -210,7 +210,7 @@ export function buildFrames(board, events, ctx) {
         decided.trick.winningCard = ev.card;
         decided.trick.byTrump = ev.byTrump;
         decided.trick.tie = ev.tie;
-        decided.banner = { winner: ev.winner, card: ev.card, bankSize: ev.bankSize, byTrump: ev.byTrump, trumpColour: ev.trumpColour };
+        decided.banner = { winner: ev.winner, card: ev.card, bankSize: ev.bankSize, bonus: ev.bonus || 0, byTrump: ev.byTrump, trumpColour: ev.trumpColour };
         push(decided, { kind: 'decided', hold: 1250 });
         const nb = reduceBoard(b, ev, ctx);
         push(nb, { kind: 'resolve', hold: 800, log: ctx.trickText(nb.last.trick, ev, ctx.names), logKind: 'trick' });

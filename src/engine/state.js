@@ -33,6 +33,7 @@ function emptyMeasures(n) {
     banked: filled(n, () => 0), // cards banked over the game
     knockOffs: filled(n, () => 0), // cards knocked off lines (R7.2)
     leftover: filled(n, () => 0), // line cards left at hand ends (R9.2)
+    bonusPoints: filled(n, () => 0), // full-line bonus points scored (R7.3a)
   };
 }
 

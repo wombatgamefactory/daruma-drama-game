@@ -5,7 +5,7 @@
 import { VARIANTS, DEFAULT_RULES, COLOURS, COLOUR_NAMES, rulesCode, resolveVariants } from '../engine/index.js';
 import { assetUrl, img, glyphImg, esc } from './assets.js';
 
-export const RULEBOOK_URL = 'rules/daruma-drama-rule-book-v4.pdf';
+export const RULEBOOK_URL = 'rules/daruma-drama-rule-book-v5.pdf';
 export const MAX_SEATS = 5;
 
 /** The bot levels offered, in menu order. A level that is not registered is shown but disabled. */
@@ -38,9 +38,9 @@ export function howToPlayHtml() {
         <ul class="how__colours" aria-label="The five colours">${colours}</ul></li>
       <li><h3>Lead and follow</h3><p>The player left of the dealer leads any card. Everyone else plays in turn and <b>must follow the colour led</b> if they can. If they cannot, they may play any card.</p></li>
       <li><h3>Win</h3><p>The highest card of the colour led wins, unless someone <b>trumps</b>. You trump only when you cannot follow and you play a card of your trump colour. The highest trump wins; two trumps of the same number go to the one played first.</p></li>
-      <li><h3>Fall and rise</h3><p>Every <b>loser's</b> card falls onto the right-hand end of their line. A line holds three cards: a fourth knocks the leftmost off, and your trump changes. The <b>winner banks their whole line</b> into their score pile, the winning card is discarded, and they lead next with an empty line and no trump.</p></li>
-      <li><h3>Scoring</h3><p>A hand lasts until the cards run out (10 tricks, or 8 with five players). Cards still lying in a line are lost. You score the cards you banked. Everybody deals once, so a game is 3 to 5 hands.</p></li>
-      <li><h3>Winning</h3><p>The highest total wins. If players tie, the one whose score piles hold the most different colours wins; if that is also tied, the win is shared.</p></li>
+      <li><h3>Fall and rise</h3><p>Every <b>loser's</b> card falls onto the right-hand end of their line. A line holds three cards: a fourth knocks the leftmost off, and your trump changes. The <b>winner banks their whole line</b> into their score pile, the winning card is discarded, and they lead next with an empty line and no trump. <b>Rise from a full line of three and score 2 bonus points.</b></p></li>
+      <li><h3>Scoring</h3><p>A hand lasts until the cards run out (10 tricks, or 8 with five players). Cards still lying in a line are lost. You score the cards you banked, plus your full-line bonuses. Everybody deals once, so a game is 3 to 5 hands.</p></li>
+      <li><h3>Winning</h3><p>The highest total wins. If players tie, the one who left the fewest cards on their line at the ends of hands wins; if that is also tied, the win is shared.</p></li>
     </ol>
     <p class="how__link"><a href="${RULEBOOK_URL}" target="_blank" rel="noopener" data-action="rulebook">Read the full rule book (PDF)</a></p>
   </div>`;

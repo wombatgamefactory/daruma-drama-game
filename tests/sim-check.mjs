@@ -1,7 +1,7 @@
 // sim-check.mjs - the simulator is deterministic and its records are consistent (~5 s).
 // Same seed twice gives identical JSON (also across worker threads); every game terminates with the
 // right number of tricks; records agree with the engine's result; bad arguments are refused; one sanity
-// number (timed bots, 4p: about 4.9 cards banked per hand, Python 4.9); the report runs.
+// number (timed bots, 4p, no bonus: about 4.9 cards banked per hand, Python 4.9); the report runs.
 // Semantics: PERMANENTLY GREEN. Exit 1 on any failure.
 
 import { writeFileSync, mkdtempSync, rmSync } from 'node:fs';
@@ -20,6 +20,7 @@ for (const argv of [
   ['--players=3', '--seats=easy', '--games=60', '--seed=7'],
   ['--players=4', '--seats=medium,easy,greedy,medium', '--games=60', '--seed=7', '--jitter=10'],
   ['--players=5', '--seats=medium', '--games=40', '--seed=9', '--variant.LINE_LIMIT=2', '--variant.LEFTOVER=minus1'],
+  ['--players=4', '--seats=medium', '--games=60', '--seed=3', '--variant.TIEBREAK=colours', '--variant.FULL_LINE_BONUS=0'],
 ]) {
   const a = JSON.stringify(run(argv));
   const b = JSON.stringify(run(argv));
@@ -30,7 +31,9 @@ for (const argv of [
   check('every game played all its tricks', games.every((g) => g.tricks === tricksPer && g.hs.length === n));
   check('each hand score row matches the totals', games.every((g) => g.tot.every((t, s) => g.hs.reduce((x, h) => x + h[s], 0) === t)));
   check('a winner has the top total and a tiebreak never widens the tie', games.every((g) => g.win.length >= 1 && g.win.length <= g.tied.length && g.win.every((s) => g.tot[s] === Math.max(...g.tot))));
-  check('the colours rule in the report agrees with the engine', games.every((g) => JSON.stringify(winnersBy(g, ['colours'])) === JSON.stringify(g.win) || argv.includes('--variant.TIEBREAK=shared')));
+  const tbArg = (argv.find((x) => x.startsWith('--variant.TIEBREAK=')) || '=leftover').split('=')[1];
+  const tbRule = { leftover: ['fewestLost'], colours: ['colours'], shared: [] }[tbArg];
+  check(`the ${tbArg} tiebreak in the report agrees with the engine`, games.every((g) => JSON.stringify(winnersBy(g, tbRule)) === JSON.stringify(g.win)));
 }
 check('different seeds differ', JSON.stringify(run(['--games=30', '--seed=1', '--seats=easy'])) !== JSON.stringify(run(['--games=30', '--seed=2', '--seats=easy'])));
 {
@@ -51,9 +54,9 @@ check('different seeds differ', JSON.stringify(run(['--games=30', '--seed=1', '-
   check('bad variants, bots and counts are refused', threw === 6, `${threw}/6`);
 }
 
-// ---- one sanity number: timed bots, 4p, banked cards per hand (Python 4.9) ----
+// ---- one sanity number: timed bots, 4p, banked cards per hand (Python 4.9; no bonus, as in the Python) ----
 {
-  const games = run(['--players=4', '--seats=medium', '--games=300', '--seed=1']);
+  const games = run(['--players=4', '--seats=medium', '--games=300', '--seed=1', '--variant.FULL_LINE_BONUS=0']);
   const perHand = mean(games.flatMap((g) => g.hs.flat()));
   check('4p medium: 4.5 to 5.4 cards banked per hand', perHand > 4.5 && perHand < 5.4, perHand.toFixed(2));
   const trump = games.reduce((s, g) => s + g.trump, 0) / games.reduce((s, g) => s + g.tricks, 0);

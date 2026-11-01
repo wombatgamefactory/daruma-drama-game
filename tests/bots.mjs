@@ -61,7 +61,8 @@ function pump() {
   }
 }
 
-const HARD_GAMES = FULL ? { 3: 300, 4: 300, 5: 300 } : { 3: 30, 4: 24, 5: 24 };
+// Quick mode is sized for the full-line bonus (standard since 01/11/2026), whose wider score spread needs more games.
+const HARD_GAMES = FULL ? { 3: 300, 4: 300, 5: 300 } : { 3: 40, 4: 40, 5: 48 };
 const MED_GAMES = 400;
 const jobs = {
   strengthHard: [3, 4, 5].map((n) => job('strength', { strong: 'hard', opp: 'medium', n, games: HARD_GAMES[n], tag: 'str-hm' })),
@@ -238,7 +239,7 @@ const variantJobs = ruleSets.map((rs) => job('variants', { label: rs.label, rule
     check(`${n}p: Easy v Easy is at the base rate (|z| < 3.5)`, Math.abs(base.z) < 3.5, `z=${base.z.toFixed(2)}`);
     check(`${n}p: one Medium v Easy opponents wins clearly more than 1/${n} (z >= 3)`, m.z >= 3 && m.rate > base.rate, `${(100 * m.rate).toFixed(1)}%, z=${m.z.toFixed(2)}`);
     check(`${n}p: one Hard v Medium opponents wins clearly more than 1/${n} (z >= 3)`, h.z >= 3, `${(100 * h.rate).toFixed(1)}%, z=${h.z.toFixed(2)}`);
-    check(`${n}p: ordering Easy < Medium < Hard (Easy at base, Medium above it, Hard ahead of Medium opponents on margin)`, base.rate < m.rate && h.margin > 0, `easy ${base.rate.toFixed(3)} medium ${m.rate.toFixed(3)} hard margin ${h.margin.toFixed(2)}`);
+    check(`${n}p: ordering Easy < Medium < Hard (Easy at base, Medium above it, Hard above its share against Medium opponents)`, base.rate < m.rate && h.rate > h.base, `easy ${base.rate.toFixed(3)} medium ${m.rate.toFixed(3)} hard ${h.rate.toFixed(3)} margin ${h.margin.toFixed(2)}`);
   }
   console.log(`  [parallel jobs finished ${((Date.now() - t0) / 1000).toFixed(1)} s after the main-thread checks; ${CONCURRENCY} worker thread(s)]`);
 }

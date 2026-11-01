@@ -10,9 +10,10 @@
 //
 // A completed trick (state.tricks, and handLog[h].tricks) is:
 //   { n, leader, ledColour, trumps, plays: [{ seat, card, trump }], winner, winningCard,
-//     byTrump, trumpsPlayed, tie, bank, knocked: [{ seat, card }] }
+//     byTrump, trumpsPlayed, tie, bank, bonus, knocked: [{ seat, card }] }
 //   trumps   every seat's trump colour (or null) for the whole trick (R6.6)
 //   bank     the winner's line before the trick, now in their score pile (R7.3)
+//   bonus    full-line bonus points for that rise (R7.3a: the bank was a full line), else 0
 //   knocked  cards knocked off the left of a line by a 4th (or L+1th) card (R7.2)
 //   tie      decided by TRUMP_TIES (two equal trumps of different colours, R6.8)
 
@@ -98,6 +99,7 @@ function resolveTrick(state, events) {
   const win = trickWinner(t.plays, t.trumps, state.rules.TRUMP_TIES);
   const w = win.seat;
   const bank = [...state.lines[w]];
+  const bonus = bank.length === limit ? state.params.fullLineBonus : 0; // R7.3a
   const knocked = [];
   // R7.8 (b), R7.1, R7.2: every loser falls at the right end; over the limit, the leftmost is knocked off.
   for (const p of t.plays) {
@@ -120,19 +122,20 @@ function resolveTrick(state, events) {
   m.tricksWon[w]++;
   m.banked[w] += bank.length;
   m.riseSizes[bank.length]++;
+  if (bonus) m.bonusPoints[w] += bonus;
   if (win.byTrump) { m.trumpTricks++; m.trumpTricksWon[w]++; }
   if (win.trumpsPlayed >= 2) m.clashTricks++;
   if (win.tie) m.trumpTies++;
   if (w === t.leader) m.leaderWins++;
 
-  const record = { ...t, winner: w, winningCard: win.card, byTrump: win.byTrump, trumpsPlayed: win.trumpsPlayed, tie: win.tie, bank, knocked };
+  const record = { ...t, winner: w, winningCard: win.card, byTrump: win.byTrump, trumpsPlayed: win.trumpsPlayed, tie: win.tie, bank, bonus, knocked };
   state.tricks.push(record);
   state.trick = null;
   state.trickNo++;
   state.leader = w; // R7.5, R12.4
   state.toAct = w;
   if (events) {
-    events.push({ type: 'trick-won', handNo: state.handNo, trickNo: record.n, winner: w, card: win.card, byTrump: win.byTrump, trumpColour: win.byTrump ? t.trumps[w] : null, bank: [...bank], bankSize: bank.length, knocked: knocked.map((k) => ({ ...k })), trumpsPlayed: win.trumpsPlayed, tie: win.tie });
+    events.push({ type: 'trick-won', handNo: state.handNo, trickNo: record.n, winner: w, card: win.card, byTrump: win.byTrump, trumpColour: win.byTrump ? t.trumps[w] : null, bank: [...bank], bankSize: bank.length, bonus, knocked: knocked.map((k) => ({ ...k })), trumpsPlayed: win.trumpsPlayed, tie: win.tie });
   }
   if (state.trickNo >= state.tricksPerHand) endHand(state, events); // R9.1
 }
@@ -143,9 +146,10 @@ function endHand(state, events) {
   const lost = state.lines.map((l) => [...l]);
   const banked = Array.from({ length: n }, (_, s) => state.tricks.filter((t) => t.winner === s).flatMap((t) => t.bank));
   const knockOffs = Array.from({ length: n }, (_, s) => state.tricks.reduce((a, t) => a + t.knocked.filter((k) => k.seat === s).length, 0));
-  // R9.2 / RV6.2: line cards are lost (or -1 each); R9.3: score = cards banked this hand.
+  const bonuses = Array.from({ length: n }, (_, s) => state.tricks.filter((t) => t.winner === s).reduce((a, t) => a + t.bonus, 0));
+  // R9.2 / RV6.2: line cards are lost (or -1 each); R9.3: score = cards banked this hand + full-line bonuses.
   const penalties = lost.map((l) => (minus1 ? l.length : 0));
-  const scores = banked.map((b, s) => b.length - penalties[s]);
+  const scores = banked.map((b, s) => b.length + bonuses[s] - penalties[s]);
   for (let s = 0; s < n; s++) {
     state.discard.push(...state.lines[s]); // R13.2
     state.lines[s] = [];
@@ -162,13 +166,14 @@ function endHand(state, events) {
     falls: [...state.falls],
     scores,
     banked,
+    bonuses,
     lost,
     penalties,
     knockOffs,
     tricks: state.tricks,
   });
   state.tricks = [];
-  if (events) events.push({ type: 'hand-ended', handNo: state.handNo, scores: [...scores], lost: lost.map((l) => [...l]), penalties: [...penalties], bankedCounts: banked.map((b) => b.length), totals: [...state.totals] });
+  if (events) events.push({ type: 'hand-ended', handNo: state.handNo, scores: [...scores], lost: lost.map((l) => [...l]), penalties: [...penalties], bankedCounts: banked.map((b) => b.length), bonuses: [...bonuses], totals: [...state.totals] });
 
   state.handNo++;
   if (nextHandSize(state) === 0) {

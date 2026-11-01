@@ -63,7 +63,7 @@ export function describeEvent(ev, names) {
     case 'trick-won': {
       const s = who(ev.winner);
       const how = ev.byTrump ? ` (${COLOUR_NAMES[ev.trumpColour]} is ${possessive(s)} trump)` : '';
-      const bank = ev.bankSize ? `banks ${ev.bankSize}` : 'banks nothing';
+      const bank = ev.bankSize ? `banks ${ev.bankSize}${ev.bonus ? ` plus a full-line bonus of ${ev.bonus}` : ''}` : 'banks nothing';
       const tie = ev.tie ? ' Equal trumps: the tie rule decides.' : '';
       const knocked = ev.knocked.length ? ` Knocked off: ${ev.knocked.map((k) => `${who(k.seat)}'s ${cardName(k.card)}`).join(', ')}.` : '';
       return `${s} ${verb(s, 'wins')} trick ${ev.trickNo} with ${cardName(ev.card)}${how} and ${verb(s, bank.split(' ')[0])}${bank.slice(bank.indexOf(' '))}.${tie}${knocked}`;
@@ -76,11 +76,13 @@ export function describeEvent(ev, names) {
     }
     case 'game-over': {
       const names2 = ev.winners.map(who);
-      if (ev.shared) return `Shared win: ${names2.join(' and ')} on ${ev.winningScore}${ev.tiebreakUsed ? `, after the colour tiebreak (${ev.colourCounts[ev.winners[0]]} colours each)` : ''}.`;
+      const tbName = ev.tiebreak === 'colours' ? 'most different colours' : 'fewest cards left on the line';
+      const tbVal = (seat) => (ev.tiebreak === 'colours' ? ev.colourCounts[seat] : ev.leftCounts[seat]);
+      if (ev.shared) return `Shared win: ${names2.join(' and ')} on ${ev.winningScore}${ev.tiebreakUsed ? `, after the tiebreak, ${tbName} (${tbVal(ev.winners[0])} each)` : ''}.`;
       const w = names2[0];
       if (ev.tiebreakUsed) {
-        const others = ev.tiedOnTotal.filter((s) => s !== ev.winners[0]).map((s) => ev.colourCounts[s]);
-        return `${w} ${verb(w, 'wins')} on ${ev.winningScore}, by the tiebreak: most different colours (${ev.colourCounts[ev.winners[0]]} against ${others.join(', ')}).`;
+        const others = ev.tiedOnTotal.filter((s) => s !== ev.winners[0]).map(tbVal);
+        return `${w} ${verb(w, 'wins')} on ${ev.winningScore}, by the tiebreak: ${tbName} (${tbVal(ev.winners[0])} against ${others.join(', ')}).`;
       }
       return `${w} ${verb(w, 'wins')} with ${plural(ev.winningScore, 'point', 'points')}, ${ev.margin} ahead.`;
     }

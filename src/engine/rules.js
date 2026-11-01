@@ -85,14 +85,18 @@ export const VARIANTS = [
     default: 'lost', rule: 'R9.2, RV6', label: 'Line cards at hand end',
     valueLabels: { lost: 'Lost (score 0)', minus1: '-1 each' },
     description: 'Cards still in your fall line at the end of a hand score nothing (lost) or -1 each (minus1).' },
-  { id: 'V7', name: 'TIEBREAK', code: 'tie', values: ['colours', 'shared'], implemented: ['colours', 'shared'],
-    default: 'colours', rule: 'R11, RV7', label: 'Tiebreak',
-    valueLabels: { colours: 'Most different colours banked', shared: 'Shared win' },
-    description: 'colours: of the players tied for most, the one with the most different colours banked over the game wins; shared: they share the win.' },
+  { id: 'V7', name: 'TIEBREAK', code: 'tie', values: ['leftover', 'colours', 'shared'], implemented: ['leftover', 'colours', 'shared'],
+    default: 'leftover', rule: 'R11, RV7', label: 'Tiebreak',
+    valueLabels: { leftover: 'Fewest cards left on your line', colours: 'Most different colours banked', shared: 'Shared win' },
+    description: 'Of the players tied for most: leftover, the one with the fewest cards left on their line at the ends of hands wins; colours, the one with the most different colours banked; shared, they share the win. Still tied: shared.' },
   { id: 'V8', name: 'TRUMP_TIES', code: 'trumptie', values: ['first', 'last'], implemented: ['first', 'last'],
     default: 'first', rule: 'R6.3, R6.8, RV8', label: 'Equal trumps',
     valueLabels: { first: 'First played wins', last: 'Last played wins' },
     description: 'Two personal trumps of different colours with the same number: the one played first (or last) wins.' },
+  { id: 'V9', name: 'FULL_LINE_BONUS', code: 'bonus', values: ['2', '1', '0'], implemented: ['2', '1', '0'],
+    default: '2', rule: 'R7.3a, RV9', label: 'Full-line bonus',
+    valueLabels: { 2: '+2 points', 1: '+1 point', 0: 'None' },
+    description: 'Rising from a full line (as many cards as the line limit) scores this many bonus points on top of the cards banked.' },
 ];
 
 /** Standard-rules values by name. Mutable on purpose (runtime probes); see header. */
@@ -100,7 +104,7 @@ export const DEFAULT_RULES = Object.fromEntries(VARIANTS.map((v) => [v.name, v.d
 
 /**
  * Merges overrides onto DEFAULT_RULES and validates the result.
- * Numbers are accepted for LINE_LIMIT (2 -> '2'). Throws on an unknown name, a value that is
+ * Numbers are accepted for LINE_LIMIT and FULL_LINE_BONUS (2 -> '2'). Throws on an unknown name, a value that is
  * not allowed, or a value that is not implemented.
  * @param {object} [overrides]  e.g. { LINE_LIMIT: '2', LEFTOVER: 'minus1' }
  * @param {VariantDef[]} [table] for tests only
@@ -132,7 +136,8 @@ export function resolveVariants(overrides = {}, table = VARIANTS) {
 /**
  * The short rules code for stats and analytics: 'std' when every switch that has an
  * effect at this player count is at its default; otherwise the non-default values as
- * `code-value` joined with '+', in V1..V8 order, e.g. 'line-2+leftover-minus1'.
+ * `code-value` joined with '+', in V1..V8 order, e.g. 'line-2+leftover-minus1'. (Standard rules changed on 01/11/2026:
+ * games before then used what is now 'tie-colours+bonus-0'.)
  * DECK_3P is omitted unless n is 3 (RV5.3). Without n, every switch is considered.
  * @param {object} rules  a resolved rules object
  * @param {number} [n]    player count
@@ -149,7 +154,7 @@ export function rulesCode(rules, n) {
 /**
  * The numbers a rules object implies at player count n, read from CONSTANTS now
  * (stored at state.params by createGame).
- * @returns {{ n:number, lineLimit:number, colours:string[], deckSize:number, handSize:number|null,
+ * @returns {{ n:number, lineLimit:number, fullLineBonus:number, colours:string[], deckSize:number, handSize:number|null,
  *   handCap:number|null, minHand:number|null, handsPerGame:number|null }}
  *   handSize: pad format cards per player per hand; handCap/minHand: shrinking format;
  *   handsPerGame: pad = n, shrinking = null (variable).
@@ -170,6 +175,7 @@ export function deriveParams(rules, n) {
   return {
     n,
     lineLimit,
+    fullLineBonus: Number(rules.FULL_LINE_BONUS),
     colours,
     deckSize,
     handSize,

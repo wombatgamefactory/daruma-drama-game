@@ -6,6 +6,6 @@ export { cardColour, cardNumber, makeCard, isCard, fullDeck, compareCards, sortC
 export { startGame, createGame, dealHand, nextHandSize } from './state.js';
 export { legalCards, isTrumpPlay, trickWinner, getValidActions, getPlayBlockReason, getActionBlockReason } from './legality.js';
 export { applyAction } from './actions.js';
-export { gameResult, colourCount, bankedOverGame } from './scoring.js';
+export { gameResult, colourCount, bankedOverGame, leftOverGame } from './scoring.js';
 export { viewFor, legalActionsFromView, shownVoids, unknownCards, determinise } from './view.js';
 export { seatName, describeAction, describeEvent } from './describe.js';

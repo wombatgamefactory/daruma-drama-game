@@ -8,7 +8,7 @@ import { botLevels } from '../src/bots/index.js';
 import { VARIANTS } from '../src/engine/index.js';
 import {
   createStatsStore, createRecorder, toCsv, toJson, csvCell, CSV_COLUMNS, summarise, exportFilename, gameToRow,
-  STORE_KEY, MAX_GAMES,
+  STORE_KEY, MAX_GAMES, migrate,
 } from '../src/ui/stats-store.js';
 import { statsHtml } from '../src/ui/stats-view.js';
 import * as analytics from '../src/ui/analytics.js';
@@ -308,6 +308,19 @@ const NONE = { onGameStart() {}, onTrickEnd() {}, onHandEnd() {}, onGameEnd() {}
   globalThis.localStorage = { getItem: throwing, setItem: throwing, removeItem: throwing };
   check('bug: archive tolerates blocked storage', archiveReport(none) === false && loadArchive().length === 0);
   delete globalThis.localStorage; delete globalThis.window; delete globalThis.location;
+}
+
+// ---------- records from before the 01/11/2026 rules change ----------
+{
+  const oldRules = { LINE_LIMIT: '3', FIRST_FALL: 'chosen', FORMAT: 'pad', HAND_SIZE: 'standard', DECK_3P: 'full', LEFTOVER: 'lost', TIEBREAK: 'colours', TRUMP_TIES: 'first' };
+  const a = migrate({ players: 4, rules: oldRules, rules_code: 'std' });
+  check('migrate: an old standard-rules record is relabelled tie-colours+bonus-0', a.rules_code === 'tie-colours+bonus-0' && a.rules.FULL_LINE_BONUS === '0');
+  const b = migrate({ players: 4, rules: { ...oldRules, LINE_LIMIT: '2' }, rules_code: 'line-2' });
+  check('migrate: an old variant record keeps its variant and gains the old defaults', b.rules_code === 'line-2+tie-colours+bonus-0');
+  const c = migrate({ players: 4, rules: { ...oldRules, TIEBREAK: 'shared' }, rules_code: 'tie-shared' });
+  check('migrate: an old shared-tiebreak record stays tie-shared', c.rules_code === 'tie-shared+bonus-0');
+  const nowRec = { players: 4, rules: { ...oldRules, TIEBREAK: 'leftover', FULL_LINE_BONUS: '2' }, rules_code: 'std' };
+  check('migrate: a record with FULL_LINE_BONUS is left alone', migrate(nowRec) === nowRec);
 }
 
 done();

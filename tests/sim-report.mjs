@@ -31,9 +31,9 @@ const pm = (xs, d = 2) => `${mean(xs).toFixed(d)} ±${mci(xs).toFixed(d)}`;
 // ---------- tiebreak rules applied to recorded games ----------
 // Each rule scores a seat (higher is better); applied to the players tied on the top total.
 export const TIEBREAKS = {
-  colours: { label: 'Most colours across all score piles (current rule)', key: (g, s) => g.col[s] },
+  colours: { label: 'Most colours across all score piles (standard until 01/11/2026)', key: (g, s) => g.col[s] },
   lastBanked: { label: 'Alt A: most cards banked in the final hand', key: (g, s) => g.lastBanked[s] },
-  fewestLost: { label: 'Alt B: fewest line cards lost over the game', key: (g, s) => -g.lostBy[s] },
+  fewestLost: { label: 'Fewest line cards left at hand ends (standard rule)', key: (g, s) => -g.lostBy[s] },
   tricksWon: { label: 'Alt C: most tricks won over the game', key: (g, s) => g.tw[s] },
   lastCols: { label: 'Alt D: most colours in the final hand\'s banked cards', key: (g, s) => g.lastCols[s] },
 };
@@ -55,9 +55,9 @@ function tiebreakTable(games) {
   const rows = [];
   const defs = [
     ['no tiebreak (all tied players share)', []],
-    ['colours (current)', ['colours']],
+    ['colours (old standard)', ['colours']],
     ['Alt A: final-hand cards banked', ['lastBanked']],
-    ['Alt B: fewest line cards lost', ['fewestLost']],
+    ['fewest left on the line (standard)', ['fewestLost']],
     ['Alt C: most tricks won', ['tricksWon']],
     ['Alt D: colours in final hand', ['lastCols']],
     ['colours, then Alt A', ['colours', 'lastBanked']],
@@ -158,7 +158,7 @@ export function report(files, { detail = false } = {}) {
     row('winner total, mean', (s) => mean(s.meanFinal).toFixed(1)),
     row('margin 1st-2nd, mean ±95%', (s) => pm(s.margins)),
     row('tie for 1st on total %  [CI]', (s) => ci(s.tieFirst, s.N)),
-    row('tiebreak (colours) decided %', (s) => ci(s.tbDecided, s.N)),
+    row('tiebreak decided %', (s) => ci(s.tbDecided, s.N)),
     row('still shared after tiebreak %', (s) => ci(s.shared, s.N)),
     row('personal-trump tricks %', (s) => ci(s.trump, s.tricks)),
     row('trump clash tricks %', (s) => ci(s.clash, s.tricks)),
