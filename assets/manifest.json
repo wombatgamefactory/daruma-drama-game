@@ -1,0 +1,716 @@
+{
+ "version": 1,
+ "total_bytes": 2340331,
+ "assets": [
+  {
+   "id": "hero-wide",
+   "file": "hero-wide.webp",
+   "width": 1600,
+   "height": 679,
+   "bytes": 157256,
+   "status": "real",
+   "what": "Wide landing-page hero: 'Daruma Drama' title, upright red Daruma and five toppled dolls on seigaiha waves",
+   "source": "AI-Art/seven-falls-key-art-wide.png"
+  },
+  {
+   "id": "key-art-main",
+   "file": "key-art-main.webp",
+   "width": 1000,
+   "height": 747,
+   "bytes": 118744,
+   "status": "real",
+   "what": "Box-style key art (4:3) with title, red Daruma and toppled dolls",
+   "source": "AI-Art/seven-falls-key-art-main.png"
+  },
+  {
+   "id": "card-back",
+   "file": "card-back.webp",
+   "width": 280,
+   "height": 375,
+   "bytes": 33278,
+   "status": "real",
+   "what": "Card back: red Daruma on sand ground, teal ogee frame (upright; rotate by CSS for sideways)",
+   "source": "AI-Art/seven-falls-card-back.png"
+  },
+  {
+   "id": "glyph-red",
+   "file": "glyph-red.webp",
+   "width": 160,
+   "height": 160,
+   "bytes": 7900,
+   "status": "real",
+   "what": "Red colour badge: hawk in a red ring on white (colour-blind marker, trump indicator)",
+   "source": "AI-Art/seven-falls-suit-icon-red.png"
+  },
+  {
+   "id": "glyph-gold",
+   "file": "glyph-gold.webp",
+   "width": 160,
+   "height": 160,
+   "bytes": 10642,
+   "status": "real",
+   "what": "Gold colour badge: phoenix in a gold ring on white (colour-blind marker, trump indicator)",
+   "source": "AI-Art/seven-falls-suit-icon-gold.png"
+  },
+  {
+   "id": "glyph-green",
+   "file": "glyph-green.webp",
+   "width": 160,
+   "height": 160,
+   "bytes": 7744,
+   "status": "real",
+   "what": "Green colour badge: sparrow in a green ring on white (colour-blind marker, trump indicator)",
+   "source": "AI-Art/seven-falls-suit-icon-green.png"
+  },
+  {
+   "id": "glyph-blue",
+   "file": "glyph-blue.webp",
+   "width": 160,
+   "height": 160,
+   "bytes": 9372,
+   "status": "real",
+   "what": "Blue colour badge: owl in a blue ring on white (colour-blind marker, trump indicator)",
+   "source": "AI-Art/seven-falls-suit-icon-blue.png"
+  },
+  {
+   "id": "glyph-purple",
+   "file": "glyph-purple.webp",
+   "width": 160,
+   "height": 160,
+   "bytes": 6670,
+   "status": "real",
+   "what": "Purple colour badge: crane in a purple ring on white (colour-blind marker, trump indicator)",
+   "source": "AI-Art/seven-falls-suit-icon-purple.png"
+  },
+  {
+   "id": "avatar-red",
+   "file": "avatar-red.webp",
+   "width": 256,
+   "height": 256,
+   "bytes": 12362,
+   "status": "real",
+   "what": "Seat avatar: stern red Daruma doll, one eye painted, on cream",
+   "source": "AI-Art/seven-falls-seat-avatar-red.png"
+  },
+  {
+   "id": "avatar-gold",
+   "file": "avatar-gold.webp",
+   "width": 256,
+   "height": 256,
+   "bytes": 11916,
+   "status": "real",
+   "what": "Seat avatar: stern gold Daruma doll, one eye painted, on cream",
+   "source": "AI-Art/seven-falls-seat-avatar-gold.png"
+  },
+  {
+   "id": "avatar-green",
+   "file": "avatar-green.webp",
+   "width": 256,
+   "height": 256,
+   "bytes": 12862,
+   "status": "real",
+   "what": "Seat avatar: stern green Daruma doll, one eye painted, on cream",
+   "source": "AI-Art/seven-falls-seat-avatar-green.png"
+  },
+  {
+   "id": "avatar-blue",
+   "file": "avatar-blue.webp",
+   "width": 256,
+   "height": 256,
+   "bytes": 10966,
+   "status": "real",
+   "what": "Seat avatar: stern blue Daruma doll, one eye painted, on cream",
+   "source": "AI-Art/seven-falls-seat-avatar-blue.png"
+  },
+  {
+   "id": "avatar-purple",
+   "file": "avatar-purple.webp",
+   "width": 256,
+   "height": 256,
+   "bytes": 11980,
+   "status": "real",
+   "what": "Seat avatar: stern purple Daruma doll, one eye painted, on cream",
+   "source": "AI-Art/seven-falls-seat-avatar-purple.png"
+  },
+  {
+   "id": "score-pile",
+   "file": "score-pile.webp",
+   "width": 192,
+   "height": 192,
+   "bytes": 6040,
+   "status": "real",
+   "what": "Score-pile / banked-wishes icon: stack of cards beside a small gold Daruma, on cream",
+   "source": "AI-Art/seven-falls-score-pile-icon.png"
+  },
+  {
+   "id": "table-texture",
+   "file": "table-texture.webp",
+   "width": 512,
+   "height": 512,
+   "bytes": 33212,
+   "status": "real",
+   "what": "Tone-on-tone teal seigaiha texture for the table background (tile with background-size; seams not verified)",
+   "source": "AI-Art/seven-falls-table-texture.png"
+  },
+  {
+   "id": "favicon",
+   "file": "favicon.png",
+   "width": 64,
+   "height": 64,
+   "bytes": 8773,
+   "status": "real",
+   "what": "Favicon: red Daruma face (64 px)",
+   "source": "AI-Art/seven-falls-seat-avatar-red.png"
+  },
+  {
+   "id": "card-red-1",
+   "file": "cards/card-red-1.webp",
+   "width": 280,
+   "height": 388,
+   "bytes": 38906,
+   "status": "real",
+   "what": "Card face: red 1 (portrait, indices in all four corners)",
+   "source": "TTS/Daruma-Drama-Cards.png"
+  },
+  {
+   "id": "card-red-2",
+   "file": "cards/card-red-2.webp",
+   "width": 280,
+   "height": 388,
+   "bytes": 39794,
+   "status": "real",
+   "what": "Card face: red 2 (portrait, indices in all four corners)",
+   "source": "TTS/Daruma-Drama-Cards.png"
+  },
+  {
+   "id": "card-red-3",
+   "file": "cards/card-red-3.webp",
+   "width": 280,
+   "height": 388,
+   "bytes": 39966,
+   "status": "real",
+   "what": "Card face: red 3 (portrait, indices in all four corners)",
+   "source": "TTS/Daruma-Drama-Cards.png"
+  },
+  {
+   "id": "card-red-4",
+   "file": "cards/card-red-4.webp",
+   "width": 280,
+   "height": 388,
+   "bytes": 39472,
+   "status": "real",
+   "what": "Card face: red 4 (portrait, indices in all four corners)",
+   "source": "TTS/Daruma-Drama-Cards.png"
+  },
+  {
+   "id": "card-red-5",
+   "file": "cards/card-red-5.webp",
+   "width": 280,
+   "height": 388,
+   "bytes": 39866,
+   "status": "real",
+   "what": "Card face: red 5 (portrait, indices in all four corners)",
+   "source": "TTS/Daruma-Drama-Cards.png"
+  },
+  {
+   "id": "card-red-6",
+   "file": "cards/card-red-6.webp",
+   "width": 280,
+   "height": 388,
+   "bytes": 40276,
+   "status": "real",
+   "what": "Card face: red 6 (portrait, indices in all four corners)",
+   "source": "TTS/Daruma-Drama-Cards.png"
+  },
+  {
+   "id": "card-red-7",
+   "file": "cards/card-red-7.webp",
+   "width": 280,
+   "height": 388,
+   "bytes": 39864,
+   "status": "real",
+   "what": "Card face: red 7 (portrait, indices in all four corners)",
+   "source": "TTS/Daruma-Drama-Cards.png"
+  },
+  {
+   "id": "card-red-8",
+   "file": "cards/card-red-8.webp",
+   "width": 280,
+   "height": 388,
+   "bytes": 40508,
+   "status": "real",
+   "what": "Card face: red 8 (portrait, indices in all four corners)",
+   "source": "TTS/Daruma-Drama-Cards.png"
+  },
+  {
+   "id": "card-red-9",
+   "file": "cards/card-red-9.webp",
+   "width": 280,
+   "height": 388,
+   "bytes": 40386,
+   "status": "real",
+   "what": "Card face: red 9 (portrait, indices in all four corners)",
+   "source": "TTS/Daruma-Drama-Cards.png"
+  },
+  {
+   "id": "card-red-10",
+   "file": "cards/card-red-10.webp",
+   "width": 280,
+   "height": 388,
+   "bytes": 40636,
+   "status": "real",
+   "what": "Card face: red 10 (portrait, indices in all four corners)",
+   "source": "TTS/Daruma-Drama-Cards.png"
+  },
+  {
+   "id": "card-red-11",
+   "file": "cards/card-red-11.webp",
+   "width": 280,
+   "height": 389,
+   "bytes": 39044,
+   "status": "real",
+   "what": "Card face: red 11 (portrait, indices in all four corners)",
+   "source": "TTS/Daruma-Drama-Cards.png"
+  },
+  {
+   "id": "card-green-1",
+   "file": "cards/card-green-1.webp",
+   "width": 280,
+   "height": 389,
+   "bytes": 32788,
+   "status": "real",
+   "what": "Card face: green 1 (portrait, indices in all four corners)",
+   "source": "TTS/Daruma-Drama-Cards.png"
+  },
+  {
+   "id": "card-green-2",
+   "file": "cards/card-green-2.webp",
+   "width": 280,
+   "height": 389,
+   "bytes": 33732,
+   "status": "real",
+   "what": "Card face: green 2 (portrait, indices in all four corners)",
+   "source": "TTS/Daruma-Drama-Cards.png"
+  },
+  {
+   "id": "card-green-3",
+   "file": "cards/card-green-3.webp",
+   "width": 280,
+   "height": 389,
+   "bytes": 33986,
+   "status": "real",
+   "what": "Card face: green 3 (portrait, indices in all four corners)",
+   "source": "TTS/Daruma-Drama-Cards.png"
+  },
+  {
+   "id": "card-green-4",
+   "file": "cards/card-green-4.webp",
+   "width": 280,
+   "height": 389,
+   "bytes": 33374,
+   "status": "real",
+   "what": "Card face: green 4 (portrait, indices in all four corners)",
+   "source": "TTS/Daruma-Drama-Cards.png"
+  },
+  {
+   "id": "card-green-5",
+   "file": "cards/card-green-5.webp",
+   "width": 280,
+   "height": 388,
+   "bytes": 33746,
+   "status": "real",
+   "what": "Card face: green 5 (portrait, indices in all four corners)",
+   "source": "TTS/Daruma-Drama-Cards.png"
+  },
+  {
+   "id": "card-green-6",
+   "file": "cards/card-green-6.webp",
+   "width": 280,
+   "height": 389,
+   "bytes": 33820,
+   "status": "real",
+   "what": "Card face: green 6 (portrait, indices in all four corners)",
+   "source": "TTS/Daruma-Drama-Cards.png"
+  },
+  {
+   "id": "card-green-7",
+   "file": "cards/card-green-7.webp",
+   "width": 280,
+   "height": 389,
+   "bytes": 33340,
+   "status": "real",
+   "what": "Card face: green 7 (portrait, indices in all four corners)",
+   "source": "TTS/Daruma-Drama-Cards.png"
+  },
+  {
+   "id": "card-green-8",
+   "file": "cards/card-green-8.webp",
+   "width": 280,
+   "height": 389,
+   "bytes": 33882,
+   "status": "real",
+   "what": "Card face: green 8 (portrait, indices in all four corners)",
+   "source": "TTS/Daruma-Drama-Cards.png"
+  },
+  {
+   "id": "card-green-9",
+   "file": "cards/card-green-9.webp",
+   "width": 280,
+   "height": 389,
+   "bytes": 33738,
+   "status": "real",
+   "what": "Card face: green 9 (portrait, indices in all four corners)",
+   "source": "TTS/Daruma-Drama-Cards.png"
+  },
+  {
+   "id": "card-green-10",
+   "file": "cards/card-green-10.webp",
+   "width": 280,
+   "height": 388,
+   "bytes": 34098,
+   "status": "real",
+   "what": "Card face: green 10 (portrait, indices in all four corners)",
+   "source": "TTS/Daruma-Drama-Cards.png"
+  },
+  {
+   "id": "card-green-11",
+   "file": "cards/card-green-11.webp",
+   "width": 280,
+   "height": 388,
+   "bytes": 33262,
+   "status": "real",
+   "what": "Card face: green 11 (portrait, indices in all four corners)",
+   "source": "TTS/Daruma-Drama-Cards.png"
+  },
+  {
+   "id": "card-purple-1",
+   "file": "cards/card-purple-1.webp",
+   "width": 280,
+   "height": 388,
+   "bytes": 31150,
+   "status": "real",
+   "what": "Card face: purple 1 (portrait, indices in all four corners)",
+   "source": "TTS/Daruma-Drama-Cards.png"
+  },
+  {
+   "id": "card-purple-2",
+   "file": "cards/card-purple-2.webp",
+   "width": 280,
+   "height": 388,
+   "bytes": 32018,
+   "status": "real",
+   "what": "Card face: purple 2 (portrait, indices in all four corners)",
+   "source": "TTS/Daruma-Drama-Cards.png"
+  },
+  {
+   "id": "card-purple-3",
+   "file": "cards/card-purple-3.webp",
+   "width": 280,
+   "height": 388,
+   "bytes": 32150,
+   "status": "real",
+   "what": "Card face: purple 3 (portrait, indices in all four corners)",
+   "source": "TTS/Daruma-Drama-Cards.png"
+  },
+  {
+   "id": "card-purple-4",
+   "file": "cards/card-purple-4.webp",
+   "width": 280,
+   "height": 388,
+   "bytes": 31486,
+   "status": "real",
+   "what": "Card face: purple 4 (portrait, indices in all four corners)",
+   "source": "TTS/Daruma-Drama-Cards.png"
+  },
+  {
+   "id": "card-purple-5",
+   "file": "cards/card-purple-5.webp",
+   "width": 280,
+   "height": 388,
+   "bytes": 32166,
+   "status": "real",
+   "what": "Card face: purple 5 (portrait, indices in all four corners)",
+   "source": "TTS/Daruma-Drama-Cards.png"
+  },
+  {
+   "id": "card-purple-6",
+   "file": "cards/card-purple-6.webp",
+   "width": 280,
+   "height": 388,
+   "bytes": 32262,
+   "status": "real",
+   "what": "Card face: purple 6 (portrait, indices in all four corners)",
+   "source": "TTS/Daruma-Drama-Cards.png"
+  },
+  {
+   "id": "card-purple-7",
+   "file": "cards/card-purple-7.webp",
+   "width": 280,
+   "height": 388,
+   "bytes": 31428,
+   "status": "real",
+   "what": "Card face: purple 7 (portrait, indices in all four corners)",
+   "source": "TTS/Daruma-Drama-Cards.png"
+  },
+  {
+   "id": "card-purple-8",
+   "file": "cards/card-purple-8.webp",
+   "width": 280,
+   "height": 388,
+   "bytes": 32296,
+   "status": "real",
+   "what": "Card face: purple 8 (portrait, indices in all four corners)",
+   "source": "TTS/Daruma-Drama-Cards.png"
+  },
+  {
+   "id": "card-purple-9",
+   "file": "cards/card-purple-9.webp",
+   "width": 280,
+   "height": 389,
+   "bytes": 31934,
+   "status": "real",
+   "what": "Card face: purple 9 (portrait, indices in all four corners)",
+   "source": "TTS/Daruma-Drama-Cards.png"
+  },
+  {
+   "id": "card-purple-10",
+   "file": "cards/card-purple-10.webp",
+   "width": 280,
+   "height": 389,
+   "bytes": 32604,
+   "status": "real",
+   "what": "Card face: purple 10 (portrait, indices in all four corners)",
+   "source": "TTS/Daruma-Drama-Cards.png"
+  },
+  {
+   "id": "card-purple-11",
+   "file": "cards/card-purple-11.webp",
+   "width": 280,
+   "height": 389,
+   "bytes": 31514,
+   "status": "real",
+   "what": "Card face: purple 11 (portrait, indices in all four corners)",
+   "source": "TTS/Daruma-Drama-Cards.png"
+  },
+  {
+   "id": "card-blue-1",
+   "file": "cards/card-blue-1.webp",
+   "width": 280,
+   "height": 389,
+   "bytes": 31252,
+   "status": "real",
+   "what": "Card face: blue 1 (portrait, indices in all four corners)",
+   "source": "TTS/Daruma-Drama-Cards.png"
+  },
+  {
+   "id": "card-blue-2",
+   "file": "cards/card-blue-2.webp",
+   "width": 280,
+   "height": 389,
+   "bytes": 32052,
+   "status": "real",
+   "what": "Card face: blue 2 (portrait, indices in all four corners)",
+   "source": "TTS/Daruma-Drama-Cards.png"
+  },
+  {
+   "id": "card-blue-3",
+   "file": "cards/card-blue-3.webp",
+   "width": 280,
+   "height": 388,
+   "bytes": 32392,
+   "status": "real",
+   "what": "Card face: blue 3 (portrait, indices in all four corners)",
+   "source": "TTS/Daruma-Drama-Cards.png"
+  },
+  {
+   "id": "card-blue-4",
+   "file": "cards/card-blue-4.webp",
+   "width": 280,
+   "height": 389,
+   "bytes": 31812,
+   "status": "real",
+   "what": "Card face: blue 4 (portrait, indices in all four corners)",
+   "source": "TTS/Daruma-Drama-Cards.png"
+  },
+  {
+   "id": "card-blue-5",
+   "file": "cards/card-blue-5.webp",
+   "width": 280,
+   "height": 389,
+   "bytes": 32236,
+   "status": "real",
+   "what": "Card face: blue 5 (portrait, indices in all four corners)",
+   "source": "TTS/Daruma-Drama-Cards.png"
+  },
+  {
+   "id": "card-blue-6",
+   "file": "cards/card-blue-6.webp",
+   "width": 280,
+   "height": 389,
+   "bytes": 32324,
+   "status": "real",
+   "what": "Card face: blue 6 (portrait, indices in all four corners)",
+   "source": "TTS/Daruma-Drama-Cards.png"
+  },
+  {
+   "id": "card-blue-7",
+   "file": "cards/card-blue-7.webp",
+   "width": 280,
+   "height": 389,
+   "bytes": 31790,
+   "status": "real",
+   "what": "Card face: blue 7 (portrait, indices in all four corners)",
+   "source": "TTS/Daruma-Drama-Cards.png"
+  },
+  {
+   "id": "card-blue-8",
+   "file": "cards/card-blue-8.webp",
+   "width": 280,
+   "height": 388,
+   "bytes": 32332,
+   "status": "real",
+   "what": "Card face: blue 8 (portrait, indices in all four corners)",
+   "source": "TTS/Daruma-Drama-Cards.png"
+  },
+  {
+   "id": "card-blue-9",
+   "file": "cards/card-blue-9.webp",
+   "width": 280,
+   "height": 388,
+   "bytes": 32270,
+   "status": "real",
+   "what": "Card face: blue 9 (portrait, indices in all four corners)",
+   "source": "TTS/Daruma-Drama-Cards.png"
+  },
+  {
+   "id": "card-blue-10",
+   "file": "cards/card-blue-10.webp",
+   "width": 280,
+   "height": 388,
+   "bytes": 32598,
+   "status": "real",
+   "what": "Card face: blue 10 (portrait, indices in all four corners)",
+   "source": "TTS/Daruma-Drama-Cards.png"
+  },
+  {
+   "id": "card-blue-11",
+   "file": "cards/card-blue-11.webp",
+   "width": 280,
+   "height": 388,
+   "bytes": 31560,
+   "status": "real",
+   "what": "Card face: blue 11 (portrait, indices in all four corners)",
+   "source": "TTS/Daruma-Drama-Cards.png"
+  },
+  {
+   "id": "card-gold-1",
+   "file": "cards/card-gold-1.webp",
+   "width": 280,
+   "height": 388,
+   "bytes": 32300,
+   "status": "real",
+   "what": "Card face: gold 1 (portrait, indices in all four corners)",
+   "source": "TTS/Daruma-Drama-Cards.png"
+  },
+  {
+   "id": "card-gold-2",
+   "file": "cards/card-gold-2.webp",
+   "width": 280,
+   "height": 388,
+   "bytes": 33658,
+   "status": "real",
+   "what": "Card face: gold 2 (portrait, indices in all four corners)",
+   "source": "TTS/Daruma-Drama-Cards.png"
+  },
+  {
+   "id": "card-gold-3",
+   "file": "cards/card-gold-3.webp",
+   "width": 280,
+   "height": 388,
+   "bytes": 33720,
+   "status": "real",
+   "what": "Card face: gold 3 (portrait, indices in all four corners)",
+   "source": "TTS/Daruma-Drama-Cards.png"
+  },
+  {
+   "id": "card-gold-4",
+   "file": "cards/card-gold-4.webp",
+   "width": 280,
+   "height": 388,
+   "bytes": 33116,
+   "status": "real",
+   "what": "Card face: gold 4 (portrait, indices in all four corners)",
+   "source": "TTS/Daruma-Drama-Cards.png"
+  },
+  {
+   "id": "card-gold-5",
+   "file": "cards/card-gold-5.webp",
+   "width": 280,
+   "height": 388,
+   "bytes": 33678,
+   "status": "real",
+   "what": "Card face: gold 5 (portrait, indices in all four corners)",
+   "source": "TTS/Daruma-Drama-Cards.png"
+  },
+  {
+   "id": "card-gold-6",
+   "file": "cards/card-gold-6.webp",
+   "width": 280,
+   "height": 388,
+   "bytes": 33812,
+   "status": "real",
+   "what": "Card face: gold 6 (portrait, indices in all four corners)",
+   "source": "TTS/Daruma-Drama-Cards.png"
+  },
+  {
+   "id": "card-gold-7",
+   "file": "cards/card-gold-7.webp",
+   "width": 280,
+   "height": 389,
+   "bytes": 32926,
+   "status": "real",
+   "what": "Card face: gold 7 (portrait, indices in all four corners)",
+   "source": "TTS/Daruma-Drama-Cards.png"
+  },
+  {
+   "id": "card-gold-8",
+   "file": "cards/card-gold-8.webp",
+   "width": 280,
+   "height": 389,
+   "bytes": 34118,
+   "status": "real",
+   "what": "Card face: gold 8 (portrait, indices in all four corners)",
+   "source": "TTS/Daruma-Drama-Cards.png"
+  },
+  {
+   "id": "card-gold-9",
+   "file": "cards/card-gold-9.webp",
+   "width": 280,
+   "height": 389,
+   "bytes": 33980,
+   "status": "real",
+   "what": "Card face: gold 9 (portrait, indices in all four corners)",
+   "source": "TTS/Daruma-Drama-Cards.png"
+  },
+  {
+   "id": "card-gold-10",
+   "file": "cards/card-gold-10.webp",
+   "width": 280,
+   "height": 389,
+   "bytes": 34336,
+   "status": "real",
+   "what": "Card face: gold 10 (portrait, indices in all four corners)",
+   "source": "TTS/Daruma-Drama-Cards.png"
+  },
+  {
+   "id": "card-gold-11",
+   "file": "cards/card-gold-11.webp",
+   "width": 280,
+   "height": 389,
+   "bytes": 32860,
+   "status": "real",
+   "what": "Card face: gold 11 (portrait, indices in all four corners)",
+   "source": "TTS/Daruma-Drama-Cards.png"
+  }
+ ]
+}

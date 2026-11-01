@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Daruma Drama</title>
+  <meta name="description" content="Daruma Drama: a trick-taking card game for 3 to 5 players. Every card you lose with stays in front of you, knocked over; your oldest fallen card is your personal trump. Play against bots or friends in your browser.">
+  <meta name="theme-color" content="#c3452a">
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="apple-touch-icon" href="assets/favicon.png">
+  <link rel="canonical" href="https://www.wombatgamefactory.com/daruma-drama-game/">
+
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.wombatgamefactory.com/daruma-drama-game/">
+  <meta property="og:site_name" content="Wombat Game Factory">
+  <meta property="og:title" content="Daruma Drama">
+  <meta property="og:description" content="Fall seven times, stand up eight. A trick-taking card game for 3 to 5 players, about 30 to 40 minutes, ages 10 and up.">
+  <meta property="og:image" content="https://www.wombatgamefactory.com/daruma-drama-game/assets/hero-wide.webp">
+  <meta property="og:image:width" content="1600">
+  <meta property="og:image:height" content="679">
+  <meta property="og:image:alt" content="Daruma Drama: a red Daruma stands among five toppled dolls on blue waves">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Daruma Drama">
+  <meta name="twitter:description" content="Fall seven times, stand up eight.">
+  <meta name="twitter:image" content="https://www.wombatgamefactory.com/daruma-drama-game/assets/hero-wide.webp">
+
+  <!-- Consent banner (CookieYes, same site key as the other Wombat Game Factory games) then Google tag
+       (gtag.js, G-FNNQF917JJ). Injected here so that localhost and 127.0.0.1 (development and the automated
+       tests) neither load the banner nor send hits to GA. window.gtag always exists and just queues on
+       dataLayer, exactly as in the standard snippet. -->
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-FNNQF917JJ');
+    (function () {
+      var h = location.hostname;
+      if (h === 'localhost' || h === '127.0.0.1' || h === '[::1]' || location.protocol === 'file:') return;
+      function add(id, src, next) {
+        var s = document.createElement('script');
+        if (id) s.id = id;
+        s.src = src;
+        s.async = false;
+        if (next) { s.onload = next; s.onerror = next; }
+        document.head.appendChild(s);
+      }
+      add('cookieyes', 'https://cdn-cookieyes.com/client_data/b4b72588ac323168ef2bca929b5e5cd9/script.js', function () {
+        add('', 'https://www.googletagmanager.com/gtag/js?id=G-FNNQF917JJ');
+      });
+    })();
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-screen="landing">
+  <main id="app"><noscript>Daruma Drama needs JavaScript to run in the browser.</noscript></main>
+  <div id="dialog-root"></div>
+  <div id="live" class="sr-only" role="status" aria-live="polite"></div>
+  <script type="module" src="src/ui/main.js"></script>
+</body>
+</html>
