@@ -21,6 +21,7 @@ The printed rule book is in [`rules/`](rules/daruma-drama-rule-book-v5.pdf), and
 - 3, 4 or 5 seats. Each seat can be a human or an Easy, Medium or Hard bot. Set every seat to a bot to watch a game.
 - Pass and play: with two or more humans on one device, a cover hides each hand between turns, including during the simultaneous first fall.
 - When you follow, a mark on each playable card shows whether it would win the trick as it stands, and every card you cannot play says why.
+- For learners, you play every card yourself, even when only one is legal. Tick "Play forced cards for me" on the setup screen to have those played automatically.
 - A **Playtest rules** panel on the setup screen with the rules that are still being tested (line limit, first fall, game format, hand size, 3-player deck, line cards at hand end, tiebreak, equal trumps, full-line bonus). Every recorded game notes which rules it used.
 - A local stats screen with CSV and JSON export, split by the rules each game was played under. Results stay in your browser.
 - A built-in "report a problem" button (also Ctrl+Shift+B) that saves a JSON snapshot of the game as it stands, for bug reports. Nothing is sent automatically; it prepares an email to info@wombatgamefactory.com.

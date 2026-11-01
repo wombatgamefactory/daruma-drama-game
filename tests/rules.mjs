@@ -195,6 +195,19 @@ check('R2.2 the shrinking deck is a variant, not the default', DEFAULT_RULES.FOR
   check('R20.2 the only red (red-7) was auto-played', ev.find((e) => e.card === 'red-7').auto === true && ev.find((e) => e.card === 'red-9').auto === false);
 }
 
+// R20.2 exception: manualSeats (the learner option) leave a seat's forced card play to that seat.
+{
+  const g = position({ hands: [['red-5', 'gold-1'], ['red-9', 'red-3'], ['red-7', 'green-1'], ['blue-1', 'blue-2']], lines: [['red-1'], ['red-2'], [], []], leader: 0 });
+  g.manualSeats = [2];
+  play(g, 'red-5', 'red-9');
+  check('R20.2 a manual seat is asked even when it has one legal card (red-7)', g.toAct === 2 && getValidActions(g).length === 1 && g.trick.plays.length === 2);
+  const ev = play(g, 'red-7', 'blue-1');
+  // Seat 1 wins with Red 9 and leads its last card (Red 3, forced: auto); seat 2's last card waits for seat 2.
+  check('R20.2 the manual seat\'s play is not marked auto; another seat\'s forced play still is', ev.find((e) => e.card === 'red-7').auto === false && ev.find((e) => e.card === 'red-3').auto === true);
+  check('R20.2 the manual seat also plays its last card itself (the last trick waits for it)', g.toAct === 2 && g.handLog.length === 0, `toAct ${g.toAct}`);
+  check('manualSeats: startGame validates and stores them; default none', createGame({ seed: 1, players: 4, manualSeats: [0, 2] }).manualSeats.join() === '0,2' && createGame({ seed: 1, players: 4 }).manualSeats.length === 0 && throws(() => createGame({ seed: 1, players: 4, manualSeats: [4] })));
+}
+
 // R6.8 / RV8: equal trumps of different colours.
 for (const [rule, winner] of [['first', 1], ['last', 2]]) {
   const g = position({ hands: [['blue-5', 'red-1'], ['gold-6', 'red-2'], ['green-6', 'red-3'], ['blue-9', 'red-4']], lines: [[], ['gold-1'], ['green-1'], []], leader: 0, rules: { TRUMP_TIES: rule } });

@@ -21,6 +21,7 @@ export const DEFAULT_SETUP = {
     { type: 'human', name: '' }, { type: 'easy', name: '' }, { type: 'easy', name: '' }, { type: 'easy', name: '' }, { type: 'easy', name: '' },
   ],
   rules: { ...DEFAULT_RULES },
+  autoPlayForced: false, // off by default so new players see, and click, the only card they may play
 };
 
 const ICON_PLAYERS = '<svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="13" cy="12" r="6" fill="#D9A63C"/><path d="M3 34c0-7 4.5-12 10-12s10 5 10 12z" fill="#D9A63C"/><circle cx="28" cy="12" r="6" fill="#C3452A"/><path d="M18 34c0-7 4.5-12 10-12s10 5 10 12z" fill="#C3452A"/></svg>';
@@ -127,6 +128,7 @@ export function landingHtml(levels, setup = DEFAULT_SETUP, message = '') {
         <fieldset class="players"><legend>Players</legend><div class="segs">${radios}</div></fieldset>
         <div class="setup__seats">${seats}</div>
         <p class="hint">Set every seat to a bot to watch a game. With two or more humans you pass the device, and a cover hides each hand between turns.</p>
+        <label class="check"><input type="checkbox" name="autoPlayForced" id="autoPlayForced"${setup.autoPlayForced ? ' checked' : ''}><span><b>Play forced cards for me</b><small>When you have only one card you are allowed to play, play it automatically. Leave this off while you learn which cards are legal.</small></span></label>
         ${rulesPanelHtml(setup)}
         <p class="form-msg" role="alert">${esc(message)}</p>
         <button type="submit" class="btn btn--primary btn--big" id="start">Start game</button>
@@ -138,7 +140,7 @@ export function landingHtml(levels, setup = DEFAULT_SETUP, message = '') {
     </section>
     <footer class="footer">
       <span><b>Game design: Dean Morris</b> &middot; Wombat Game Factory &middot; London, UK</span>
-      <span>Rule book v4 &middot; Prototype art</span>
+      <span>Rule book v5 &middot; Prototype art</span>
     </footer>
   </div>`;
 }
@@ -153,7 +155,8 @@ export function readSetup(form) {
   const seats = Array.from({ length: MAX_SEATS }, (_, i) => ({ type: v(`type${i}`) || (i === 0 ? 'human' : 'easy'), name: v(`name${i}`).trim() }));
   const rules = {};
   for (const def of VARIANTS) rules[def.name] = v(`rule-${def.name}`) || def.default;
-  return { players, seats, rules };
+  const auto = form.elements.autoPlayForced;
+  return { players, seats, rules, autoPlayForced: !!(auto && auto.checked) };
 }
 
 /** Shows only the seats and rule rows that apply, and keeps the "non-standard rules" note honest. */

@@ -52,6 +52,23 @@ function humanTurn(ctl, rng, stats) {
   check('human v 3 Easy: no action when nobody may act', ctl.play({ type: 'play', card: 'red-1' }).ok === false && ctl.stepBot() === null);
 }
 
+// ---------- learner option: autoPlayForced false (the setup screen's default) ----------
+{
+  const ctl = createController({ seats: [{ type: 'human' }, { type: 'easy' }, { type: 'easy' }, { type: 'easy' }], seed: 11, autoPlayForced: false });
+  const rng = makeRng('h2');
+  const stats = { refusalMessages: 0, badAccept: 0, badRefuse: 0, turns: 0 };
+  let guard = 0;
+  while (!ctl.isFinished() && guard++ < 800) {
+    ctl.runBots();
+    if (ctl.isHumanTurn()) humanTurn(ctl, rng, stats);
+  }
+  const autoHuman = ctl.log.filter((l) => l.event.type === 'card-played' && l.event.seat === 0 && l.event.auto).length;
+  check('autoPlayForced false: the game finishes and the human seat is manual', ctl.isFinished() && ctl.autoPlayForced === false && ctl.state.manualSeats.join() === '0');
+  check('autoPlayForced false: no human card is auto-played; the human is asked for forced cards too', autoHuman === 0 && stats.badRefuse === 0 && stats.turns >= 40, `auto ${autoHuman}, turns ${stats.turns}`);
+  const def = createController({ seats: [{ type: 'human' }, { type: 'easy' }, { type: 'easy' }], seed: 3 });
+  check('autoPlayForced defaults to true in the controller (no manual seats)', def.autoPlayForced === true && def.state.manualSeats.length === 0);
+}
+
 // ---------- 3 humans, pass-and-play ----------
 {
   const ctl = createController({ seats: [{ type: 'human', name: 'Ann' }, { type: 'human', name: 'Bo' }, { type: 'easy' }, { type: 'human', name: 'Cy' }], seed: 'pp' });

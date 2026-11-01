@@ -38,9 +38,14 @@ export function applyAction(state, action, opts = {}) {
   return events || [];
 }
 
-/** Applies single-option decisions until a real choice or the end (R20.2). */
+/**
+ * Applies single-option decisions until a real choice or the end (R20.2). A card play by one of
+ * state.manualSeats is left for that seat to make, even when it is the only legal card.
+ */
 function runForced(state, events) {
+  const manual = state.manualSeats || [];
   while (state.toAct !== null) {
+    if (state.phase === 'play' && manual.includes(state.toAct)) return;
     const acts = getValidActions(state);
     if (acts.length !== 1) return;
     doAction(state, acts[0], events, true);

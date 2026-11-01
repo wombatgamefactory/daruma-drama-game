@@ -20,6 +20,8 @@ export const MAX_BOT_FAILURES = 3;
  * @param {number|string} cfg.seed                    the UI picks it (e.g. from the clock); required
  * @param {object} [cfg.rules]                        variant overrides (the Playtest rules panel)
  * @param {number|null} [cfg.firstDealer]             default: drawn from the seed (R2.4)
+ * @param {boolean} [cfg.autoPlayForced]              default true: a human's only legal card plays itself;
+ *                                                     false: humans click it (the setup screen's learner option)
  */
 export function createController(cfg) {
   const seats = cfg.seats.map((s) => ({ type: s.type, name: s.name || '' }));
@@ -29,7 +31,8 @@ export function createController(cfg) {
   const n = seats.length;
   const humanSeats = seats.map((s, i) => (s.type === 'human' ? i : -1)).filter((i) => i >= 0);
   const names = seats.map((s, i) => s.name || (s.type === 'human' ? (humanSeats.length === 1 ? 'You' : `Player ${i + 1}`) : `${getBot(s.type).label} bot ${i + 1}`));
-  const started = startGame({ seed, players: n, rules: cfg.rules || {}, firstDealer: cfg.firstDealer ?? null });
+  const autoPlayForced = cfg.autoPlayForced !== false;
+  const started = startGame({ seed, players: n, rules: cfg.rules || {}, firstDealer: cfg.firstDealer ?? null, manualSeats: autoPlayForced ? [] : humanSeats });
   const state = started.state;
   const botRngs = seats.map((_, seat) => makeRng(deriveSeed(seed, 'bot', seat)));
   const log = []; // { text, event }
@@ -64,6 +67,7 @@ export function createController(cfg) {
     seats,
     names,
     humanSeats,
+    autoPlayForced,
     startEvents: started.events,
     get state() { return state; },
     get log() { return log; },

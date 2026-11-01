@@ -134,6 +134,9 @@ export function dealHand(state, events) {
  *        fixed deals by hand index (replays, tests): hands by seat, each exactly as dealt
  *        (index 0 = first card dealt, the one that falls under FIRST_FALL top). Hands without
  *        an entry are shuffled from the seed.
+ * @param {number[]} [opts.manualSeats] seats whose single-option card plays are NOT auto-applied
+ *        (R20.2 exception for learners: they click even a forced card). Default none. Not a rule:
+ *        it never changes the result, so it is not in `rules` or the rules code.
  * @returns {{ state: object, events: object[] }}
  */
 export function startGame(opts = {}) {
@@ -146,6 +149,8 @@ export function startGame(opts = {}) {
   if (firstDealer === null || firstDealer === undefined) dealer0 = rngInt(rng, n); // R2.4
   else if (Number.isInteger(firstDealer) && firstDealer >= 0 && firstDealer < n) dealer0 = firstDealer;
   else throw new Error(`firstDealer must be a seat 0..${n - 1} or null, got ${firstDealer}`);
+  const manualSeats = Array.isArray(opts.manualSeats) ? [...new Set(opts.manualSeats)].sort((a, b) => a - b) : [];
+  if (manualSeats.some((s) => !Number.isInteger(s) || s < 0 || s >= n)) throw new Error(`manualSeats must be seats 0..${n - 1}`);
 
   const state = {
     kind: 'game',
@@ -157,6 +162,7 @@ export function startGame(opts = {}) {
     rulesCode: rulesCode(rules, n),
     rng,
     deals: deals ? JSON.parse(JSON.stringify(deals)) : null,
+    manualSeats,
     firstDealer: dealer0,
     dealer: dealer0,
     handNo: 0,

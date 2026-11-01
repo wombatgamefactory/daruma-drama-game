@@ -63,8 +63,10 @@ export function turnPrompt(view, names) {
   }
   const t = view.trick;
   if (!t) return 'You lead. Play any card: its colour is the colour led.';
-  const hasLed = view.hand.some((c) => cardColour(c) === t.ledColour);
-  if (hasLed) return `${colourName(t.ledColour)} was led. You hold ${colourName(t.ledColour)}, so you must follow it.`;
+  const led = view.hand.filter((c) => cardColour(c) === t.ledColour);
+  if (led.length === 1 && view.hand.length > 1) return `${colourName(t.ledColour)} was led. ${cardName(led[0])} is your only ${colourName(t.ledColour)} card, so it is the only card you can play.`;
+  if (view.hand.length === 1) return `${colourName(t.ledColour)} was led. ${cardName(view.hand[0])} is your last card, so you play it.`;
+  if (led.length) return `${colourName(t.ledColour)} was led. You hold ${colourName(t.ledColour)}, so you must follow it.`;
   const trump = view.trumps[view.seat];
   if (trump === t.ledColour) return `${colourName(t.ledColour)} was led and you have none. Play anything; your trump is also ${colourName(trump)}, so you cannot trump this trick.`;
   if (trump) return `${colourName(t.ledColour)} was led and you have none. Play anything; ${colourName(trump)} is your trump, so a ${colourName(trump)} card can win.`;

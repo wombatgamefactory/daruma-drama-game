@@ -221,6 +221,7 @@ function startSession(setup) {
       seats: seats.map((s, i) => ({ type: s.type, name: typed[i] })),
       seed: freshSeed(),
       rules: { ...setup.rules },
+      autoPlayForced: !!setup.autoPlayForced,
     });
   } catch (err) {
     ctl = null;

@@ -278,6 +278,16 @@ function diffKeys(a, b) {
   const v = ctl.view(0);
   check('prompt: the first fall is explained', /first fall/i.test(turnPrompt(v, ctl.names)) && /trump/.test(turnPrompt(v, ctl.names)));
   check('hint text: a first fall names the trump colour it would set', /would be your first fall/.test(previewText(previewCard(ctl.state, v.hand[0]), ctl.names, '')));
+  const pv = (hand, led) => ({ phase: 'play', seat: 0, hand, trick: { ledColour: led, plays: [] }, trumps: [null, null, null] });
+  check('prompt: a single card of the led colour is named as the only playable card', /Red 4 is your only Red card, so it is the only card you can play/.test(turnPrompt(pv(['red-4', 'blue-2', 'gold-9'], 'red'), ctl.names)));
+  check('prompt: the last card in hand is named', /Blue 2 is your last card/.test(turnPrompt(pv(['blue-2'], 'red'), ctl.names)));
+  check('prompt: two cards of the led colour still say "must follow"', /must follow/.test(turnPrompt(pv(['red-4', 'red-6', 'gold-9'], 'red'), ctl.names)));
+}
+{
+  // The learner option on the setup screen: off by default, read back from the form.
+  const html = landingHtml(botLevels(), DEFAULT_SETUP);
+  check('setup: "Play forced cards for me" checkbox, unchecked by default', DEFAULT_SETUP.autoPlayForced === false && /name="autoPlayForced"/.test(html) && !/name="autoPlayForced"[^>]*checked/.test(html));
+  check('setup: the checkbox is checked when the setup asks for it', /name="autoPlayForced"[^>]*checked/.test(landingHtml(botLevels(), { ...DEFAULT_SETUP, autoPlayForced: true })));
 }
 
 done();
